@@ -30,7 +30,7 @@ Here are a few things I’ve created:
 
 ### 🛠️ Technologies & Tools I Use 💡
 
-💻 HTML · 🎨 CSS · ⚡ JavaScript · 🔷 TypeScript · 🧩 Vue · ☁️ Nuxt · 🧠 Node.js · 🌈 Tailwind CSS · 🧰 Git · 🐬 MySQL · 🪶 knex.js · 🌀 Nginx
+💻 HTML · 🎨 CSS · ⚡ JavaScript · 🔷 TypeScript · 🧩 Vue · ☁️ Nuxt · 🧠 Node.js · 🌈 Tailwind CSS · 🧰 Git · 🐬 MySQL · 🔧 knex.js · 🌀 Nginx
 
 ---
 
