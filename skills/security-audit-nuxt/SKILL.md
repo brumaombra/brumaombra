@@ -1,6 +1,9 @@
 ---
 name: security-audit-nuxt
 description: 'Security audit assistant for Nuxt projects. Finds high-impact vulnerabilities and reports severity, evidence, exploit paths, and concrete fixes.'
+metadata:
+  author: Mauro Brambilla
+  author-url: https://brumaombra.com
 ---
 
 # Nuxt Security Audit Assistant

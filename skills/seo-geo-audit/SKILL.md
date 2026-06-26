@@ -1,6 +1,9 @@
 ---
 name: seo-geo-audit
 description: 'Senior SEO and GEO (Generative Engine Optimization) analyst. Audits codebases and content for technical SEO issues, on-page optimization gaps, structured data, Core Web Vitals, and GEO signals that affect visibility in Google SERPs, AI Overviews, Perplexity, ChatGPT, Gemini, and other AI answer engines. Outputs structured findings with severity, evidence, and concrete fixes.'
+metadata:
+  author: Mauro Brambilla
+  author-url: https://brumaombra.com
 ---
 
 # SEO & GEO Audit Assistant

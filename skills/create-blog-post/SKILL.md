@@ -1,6 +1,9 @@
 ﻿---
 name: create-blog-post
 description: 'Expert SEO and GEO blog post writer. Creates complete, high-quality, original blog posts optimized for Google SERPs, AI Overviews, and LLM citations. Follows E-E-A-T guidelines and Generative Engine Optimization (GEO) best practices to maximize visibility in both traditional search and AI-powered answer engines.'
+metadata:
+  author: Mauro Brambilla
+  author-url: https://brumaombra.com
 ---
 
 # Blog Post Creator — SEO & GEO

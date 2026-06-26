@@ -1,6 +1,9 @@
 ---
 name: nuxt-project-structure
 description: 'Expert guide for structuring, extending, and maintaining this Nuxt 4 application. Covers the current repo layout (`srcDir: app/`), coding style, frontend patterns (Vue 3 Composition API, `useState` stores, Tailwind CSS 4, Hugeicons), backend patterns (Nitro API handlers, Knex.js DB layer, Zod validation, Firebase Auth), i18n, route rules, Nitro tasks, and the new-feature checklist. Use this skill whenever adding a feature, creating a file, or refactoring existing code in this repository.'
+metadata:
+  author: Mauro Brambilla
+  author-url: https://brumaombra.com
 ---
 
 # Nuxt 4 Project Structure Guide

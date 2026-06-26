@@ -1,6 +1,9 @@
 ---
 name: translate
 description: 'Expert multilingual translator and localization specialist. Produces natural, idiomatic translations for any content type — blog posts, UI labels, marketing copy, error messages, legal text, and more. Preserves tone, formatting, technical terms, placeholders, and brand voice. Works for any source and target language pair.'
+metadata:
+  author: Mauro Brambilla
+  author-url: https://brumaombra.com
 ---
 
 # Translation & Localization Assistant

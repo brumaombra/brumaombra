@@ -1,6 +1,9 @@
 ---
 name: security-audit-node
 description: 'Security audit assistant for plain Node.js projects. Finds high-impact vulnerabilities and reports severity, evidence, exploit paths, and concrete fixes.'
+metadata:
+  author: Mauro Brambilla
+  author-url: https://brumaombra.com
 ---
 
 # Node.js Security Audit Assistant
