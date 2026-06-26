@@ -11,9 +11,10 @@ Finance enthusiast and tech lover. I'm a web developer focused on crafting respo
 Here are a few things I’ve created:
 
 - 🧾 **[Bruma Surveys](https://brumasurveys.com/)** - A dead-simple, privacy-friendly survey tool for creating clean, beautiful surveys without the bloat.
-- 📣 **[KrowdCall](https://krowdcall.com/)** - A free prediction market platform for creating markets, making calls with friends, and competing with virtual coins.
-- 📈 **[KaspHub](https://kasphub.com/)** - The ultimate dashboard for Kaspa fans with real-time metrics, charts, and trends.
 - 🎅 **[Amazing Secret Santa](https://amazingsecretsanta.com/)** - The easiest way to run Secret Santa exchanges with friends, family, or coworkers, no spreadsheets required.
+- 📈 **[KaspHub](https://kasphub.com/)** - The ultimate dashboard for Kaspa fans with real-time metrics, charts, and trends.
+- 📣 **[KrowdCall](https://krowdcall.com/)** - A free prediction market platform for creating markets, making calls with friends, and competing with virtual coins.
+- 🛠️ **[OpenGizmo](https://opengizmo.dev/)** - A website for exploring innovative and cool DIY gadgets made with the ESP32 microcontroller.
 - 🏁 **[FlagFront](https://flagfront.brumaombra.com/)** - A multiplayer strategy game on a global grid where players capture territories and climb the leaderboard.
 
 ...and some open-source projects as well:
@@ -23,7 +24,6 @@ Here are a few things I’ve created:
 - 🧠 **[Squadforge](https://github.com/brumaombra/squadforge)** - JavaScript framework for building AI agents with specialized subagents, local tools, prompt files, and persisted sessions.
 - 🏠 **[Home Security](https://github.com/brumaombra/home-security)** - AI-powered home security system with YOLO detection, multi-camera streaming, event logging, and a Nuxt UI.
 - 🍲 **[MicroW8](https://github.com/brumaombra/microw8)** - Smart microwave queue monitoring with AI using YOLO11n, ESP32-CAM modules, and a privacy-first dashboard.
-- 🟠 **[Bitcoin Ticker](https://github.com/brumaombra/bitcoin-ticker)** - ESP32 and MAX7219-powered Bitcoin ticker with live prices and a Nuxt dashboard.
 - 🌦️ **[Weather Station](https://github.com/brumaombra/weather-station)** - Portable ESP32 environmental monitor with real-time readings and a Vue dashboard.
 
 ---
