@@ -203,16 +203,6 @@ Deliver in this exact order:
 1. **Suggested filename** — kebab-case, max 5 words, matches primary keyword (e.g. `how-to-do-x.md`).
 2. **Full `.md` file** — valid Nuxt Content frontmatter + complete markdown body, English only.
 3. **FAQs** — 5–8 Q&A added to the frontmatter `faqs` array only (match the schema of existing posts). Do **not** repeat them in the markdown body — the component renders them automatically.
-4. **Image generation prompt** — output this as a standalone text block in your reply to the user (not inside the `.md` file). It must be a detailed prompt (150–250 words) suitable for an AI image generator (e.g. Midjourney, DALL·E, Stable Diffusion) to produce the hero/OG image for the post. The prompt must:
-   - Describe the visual style explicitly (e.g. "flat illustration", "isometric 3D", "photorealistic", "minimal vector art").
-   - Specify the color palette in concrete terms (e.g. "deep navy blue background, white and electric green accents").
-   - Include the subject matter tied directly to the post topic — not generic "blog header" imagery.
-   - Define composition and framing (e.g. "centered single subject", "wide banner format with left-aligned focal point").
-   - Mention lighting, mood, and any texture/detail preferences.
-   - End with technical parameters: aspect ratio (`16:9` for OG images), resolution hint, and any negative prompts (elements to exclude).
-   - The image path in the frontmatter must follow the convention `/images/blog/<filename>.png`, where `<filename>` matches the post's kebab-case slug.
-4. **Image notes** — 3–5 image suggestions with descriptive alt text.
-5. **Internal linking suggestions** — 3–8 existing posts/pages to link to.
 
 ## 📝 Writing Methodology
 
