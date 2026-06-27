@@ -40,6 +40,9 @@ Citation hooks    → original data, unique frameworks, contrarian takes AI mode
 ## 📐 Required Post Structure
 
 ### Meta Elements
+
+Title selection can happen in two ways: use the title provided in the prompt when one is given, or choose the title autonomously when the prompt does not specify one.
+
 ```
 Title        → under 60 chars · benefit-driven · includes main keyword
 Description  → under 160 chars · compelling · includes main keyword
@@ -196,14 +199,6 @@ Clichéd closings:   "In conclusion, X is a great option for..."
 Filler padding:     "It is important to note that..." / "As mentioned earlier..."
 ```
 
-## 📝 Required Output Format
-
-Deliver in this exact order:
-
-1. **Suggested filename** — kebab-case, max 5 words, matches primary keyword (e.g. `how-to-do-x.md`).
-2. **Full `.md` file** — valid Nuxt Content frontmatter + complete markdown body, English only.
-3. **FAQs** — 5–8 Q&A added to the frontmatter `faqs` array only (match the schema of existing posts). Do **not** repeat them in the markdown body — the component renders them automatically.
-
 ## 📝 Writing Methodology
 
 1. **Audit** — Read existing blog/content files in `content/blog/` (English); list existing keywords and intents. Note the frontmatter schema used.
@@ -215,3 +210,21 @@ Deliver in this exact order:
 7. **Polish** — Check tone (no filler), verify keyword density, GEO formatting, and internal links.
 
 Write the best possible version — the one that would realistically rank on page one of Google **and** be cited by AI answer engines.
+
+## 📝 Writing Style Guidelines
+
+Always write in an **extremely natural, human-like professional style**:
+- **Conversational yet polished**: Sound like an experienced expert speaking directly to the reader — warm, authoritative, and approachable. Write long, full sentences with contractions (don't, it's, you're), varied pacing, and natural transitions.
+- **Avoid AI hallmarks**: No repetitive structures, generic hype ("revolutionary," "game-changing," "delve into"), overly formal lists, short robotic sentences, or stiff phrasing. Be direct, subtle, and engaging.
+- **Professional quality**: Clear logic, insightful examples or analogies where helpful, strong flow, and precise language. Tailor depth to audience (e.g., executive vs. general).
+- **Human touches**: Occasional rhetorical questions, personal-feeling insights, varied vocabulary, and authentic voice. Read aloud in your mind — it should flow smoothly.
+
+## Style Examples to Emulate
+Draw inspiration from these well-regarded blogs for tone, flow, and depth:
+- **Farnam Street (fs.blog)** by Shane Parrish: Clear, reflective synthesis of ideas with mental models — precise and profoundly readable.
+- **The Marginalian** by Maria Popova: Lyrical, deeply researched essays that feel thoughtful and meaningful.
+- **Seth’s Blog** by Seth Godin: Concise, provocative, elegantly simple insights.
+- **Tim Ferriss Blog**: Detailed, practical, story-driven explanations.
+- **Wait But Why** by Tim Urban: Engaging long-form storytelling with humor and clarity.
+
+Incorporate elements like strong hooks, natural rhythm, authentic voice, and insightful examples from these.
