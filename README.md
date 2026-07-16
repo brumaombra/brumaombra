@@ -41,6 +41,18 @@ Here are a few things I’ve created:
 
 ---
 
+### ☕ Support My Work 🚀
+
+If you enjoy my projects and want to help me keep building useful tools, weird gadgets, and open-source experiments, you can support me on Patreon. Every contribution helps fund hosting, hardware, and more time for making things that are fun to use.
+
+<p align="center">
+	<a href="https://www.patreon.com/brumaombra">
+		<img src="https://img.shields.io/badge/Support%20me%20on-Patreon-ff424d?logo=patreon&logoColor=white&style=for-the-badge" alt="Support Brumaombra on Patreon">
+	</a>
+</p>
+
+---
+
 ### 📫 Let’s Connect 🌍
 
 - ✉️ **Email:** [contact@brumaombra.com](mailto:contact@brumaombra.com)
