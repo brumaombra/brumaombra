@@ -36,8 +36,8 @@ Here are a few things I’ve created:
 
 ### 🎸 Hobbies & Interests 🎯
 
-- 🎶 **Playing Guitar** – Strumming my guitar like a rockstar... in the shower, where no one can hear the off-key notes.
-- 💹 **Finance** – Aspiring to become the next Warren Buffet... Sadly, currently at the Jim Cramer stage.
+- 🎶 **Playing Guitar** - Strumming my guitar like a rockstar... in the shower, where no one can hear the off-key notes.
+- 💹 **Finance** - Aspiring to become the next Warren Buffet... Sadly, currently at the Jim Cramer stage.
 
 ---
 
@@ -45,14 +45,20 @@ Here are a few things I’ve created:
 
 If you enjoy my projects and want to help me keep building useful tools, weird gadgets, and open-source experiments, you can support me on Patreon or Ko-fi. Every contribution helps fund hosting, hardware, and more time for making things that are fun to use!
 
-<p align="center">
-	<a href="https://www.patreon.com/brumaombra">
-		<img src="https://img.shields.io/badge/Support%20me%20on-Patreon-ff424d?logo=patreon&logoColor=white&style=for-the-badge" alt="Support Brumaombra on Patreon">
-	</a>
-	<a href="https://ko-fi.com/brumaombra">
-		<img src="https://img.shields.io/badge/Support%20me%20on-Ko--fi-ff5e5b?logo=kofi&logoColor=white&style=for-the-badge" alt="Support Brumaombra on Ko-fi">
-	</a>
-</p>
+<table align="center" cellspacing="0" cellpadding="0">
+	<tr>
+		<td>
+			<a href="https://www.patreon.com/brumaombra">
+				<img src="https://img.shields.io/badge/Support%20me%20on-Patreon-ff424d?logo=patreon&logoColor=white&style=for-the-badge" alt="Support Brumaombra on Patreon">
+			</a>
+		</td>
+		<td>
+			<a href="https://ko-fi.com/brumaombra">
+				<img src="https://img.shields.io/badge/Support%20me%20on-Ko--fi-ff5e5b?logo=kofi&logoColor=white&style=for-the-badge" alt="Support Brumaombra on Ko-fi">
+			</a>
+		</td>
+	</tr>
+</table>
 
 ---
 
