@@ -47,10 +47,10 @@ If you enjoy my projects and want to help me keep building useful tools, weird g
 
 <div align="center">
 	<a href="https://www.patreon.com/brumaombra" target="_blank" rel="noopener noreferrer">
-		<img src="images/patreon.png" alt="Support Brumaombra on Patreon" height="56" hspace="8">
+		<img src="images/patreon.png" alt="Support Brumaombra on Patreon" height="50" hspace="8">
 	</a>
 	<a href="https://ko-fi.com/brumaombra" target="_blank" rel="noopener noreferrer">
-		<img src="images/ko-fi.png" alt="Support Brumaombra on Ko-fi" height="56" hspace="8">
+		<img src="images/ko-fi.png" alt="Support Brumaombra on Ko-fi" height="50" hspace="8">
 	</a>
 </div>
 
