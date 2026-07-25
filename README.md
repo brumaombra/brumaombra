@@ -45,20 +45,14 @@ Here are a few things I’ve created:
 
 If you enjoy my projects and want to help me keep building useful tools, weird gadgets, and open-source experiments, you can support me on Patreon or Ko-fi. Every contribution helps fund hosting, hardware, and more time for making things that are fun to use!
 
-<table role="presentation" align="center" border="0" cellspacing="0" cellpadding="0" style="border: 0 !important; border-collapse: collapse;">
-	<tr style="border: 0 !important;">
-		<td style="border: 0 !important; padding: 0 14px 0 0;">
-			<a href="https://www.patreon.com/brumaombra" target="_blank" rel="noopener noreferrer">
-				<img src="images/patreon.png" alt="Support Brumaombra on Patreon" height="56">
-			</a>
-		</td>
-		<td style="border: 0 !important; padding: 0;">
-			<a href="https://ko-fi.com/brumaombra" target="_blank" rel="noopener noreferrer">
-				<img src="images/ko-fi.png" alt="Support Brumaombra on Ko-fi" height="56">
-			</a>
-		</td>
-	</tr>
-</table>
+<div align="center">
+	<a href="https://www.patreon.com/brumaombra" target="_blank" rel="noopener noreferrer">
+		<img src="images/patreon.png" alt="Support Brumaombra on Patreon" height="56" hspace="8">
+	</a>
+	<a href="https://ko-fi.com/brumaombra" target="_blank" rel="noopener noreferrer">
+		<img src="images/ko-fi.png" alt="Support Brumaombra on Ko-fi" height="56" hspace="8">
+	</a>
+</div>
 
 ---
 
