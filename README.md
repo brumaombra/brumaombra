@@ -49,7 +49,6 @@ If you enjoy my projects and want to help me keep building useful tools, weird g
 	<a href="https://www.patreon.com/brumaombra">
 		<img src="https://img.shields.io/badge/Support%20me%20on-Patreon-ff424d?logo=patreon&logoColor=white&style=for-the-badge" alt="Support Brumaombra on Patreon">
 	</a>
-	&nbsp;&nbsp;
 	<a href="https://ko-fi.com/brumaombra">
 		<img src="https://img.shields.io/badge/Support%20me%20on-Ko--fi-ff5e5b?logo=kofi&logoColor=white&style=for-the-badge" alt="Support Brumaombra on Ko-fi">
 	</a>
