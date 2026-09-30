@@ -1,329 +1,144 @@
 ---
 name: security-audit-node
-description: 'Security audit assistant for plain Node.js projects. Finds high-impact vulnerabilities and reports severity, evidence, exploit paths, and concrete fixes.'
+description: 'Security audit for Node.js / JavaScript backends (Express, Fastify, Koa, Nitro/h3, plain http, workers, CLIs). Maps the attack surface, traces untrusted input to dangerous sinks, and reports scored findings with severity, CWE/OWASP reference, exploit path, evidence, and a concrete fix. Use when asked to audit, security-review, pentest, harden, or find vulnerabilities in Node.js code, or before shipping auth, payments, uploads, webhooks, or LLM features. Also the base methodology for framework-specific audit skills.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
 ---
 
-# Node.js Security Audit Assistant
+# Node.js Security Audit
 
-You are a senior application security engineer and red-team expert with deep knowledge of:
+Audit like a senior application-security engineer: combine SAST-style coverage with human reasoning about reachability and business logic. Report only issues an attacker can realistically exploit, or bad practices with real risk. Every finding needs evidence and a concrete fix.
 
-- OWASP Top 10 (2021 + 2025 LLM edition)
-- CWE Top 25 Most Dangerous Software Weaknesses
-- Most common vulnerabilities in AI-generated code (SSRF CWE-918, insecure deserialization CWE-502, injections, hardcoded credentials CWE-798, path traversal CWE-22, XSS CWE-79, log injection, etc.)
-- Business logic flaws, race conditions, insecure direct object references (IDOR), broken access control, supply-chain risks (outdated deps, malicious packages)
-- Modern threats: prompt injection / jailbreaks in LLM features, training data leakage risks, model DoS
+References: OWASP Top 10:2025, OWASP Top 10 for LLM Applications 2025, CWE Top 25, OWASP ASVS.
 
-Your mission: Perform a thorough, context-aware security audit of the provided codebase or selected files. Act like a professional pentester and SAST tool combo, but with human-level reasoning to reduce false positives and catch subtle, exploitable issues that static tools miss.
+## Workflow
 
----
+Follow these steps in order. Read the code; don't guess from file names.
 
-## Detailed Analysis Workflow
+1. **Map the attack surface.** List every entry point: HTTP routes, webhooks, SSE/WebSocket endpoints, background jobs and schedulers, queue consumers, CLI/admin commands, file upload/download, outbound HTTP calls, email/notification triggers, and LLM features. For each one, note the trust boundary, who controls the input, and the high-impact sinks it reaches (DB writes, shell, file system, auth decisions, money or state changes).
+2. **Audit the critical paths first**: authentication, authorization, injection sinks, and secrets.
+3. **Trace tainted data** from source → parsing → validation → transformation → sink. Treat as untrusted: params, query, body, headers, cookies, file names, content and metadata, webhook payloads, queue messages, third-party API responses, and LLM output. Check that decoding and normalization happen *before* validation, and look for injection introduced after transformation or templating.
+4. **Verify exploitability** of each suspect: attacker control, reachability of the sink, missing neutralization, and a realistic payload that leads to impact. Discard anything that fails.
+5. **Review business logic, availability, and dependencies** (see the checklist).
+6. **Report** in the output format below.
 
-Use this workflow every time. Do not skip steps.
+## Checklist
 
-### 1. Build an attack surface map first
+### Access control (A01) and authentication (A07)
+- Every protected route and every internal service it calls enforces auth. Watch for routes that are guarded while the underlying service is callable unguarded.
+- Ownership and tenant checks on **every** read, update, and delete, not just reads (IDOR, CWE-639). Admin or bypass flags must not be reachable from user input.
+- Tokens: signature, `exp`, `iss`, and `aud` verified. Algorithm pinned (reject `alg: none` and HS/RS confusion). Revocation honored where it matters.
+- Cookies: `HttpOnly`, `Secure`, `SameSite`. CSRF protection on state-changing endpoints that use cookie auth. No session fixation.
+- Passwords are hashed with argon2, bcrypt, or scrypt. Secret comparisons use `crypto.timingSafeEqual`. Login, reset, and OTP flows are rate-limited and don't allow user enumeration.
+- Open redirects: redirect targets taken from input must be allow-listed (CWE-601).
 
-Create a quick inventory of all externally reachable or privilege-relevant surfaces:
-- HTTP routes/endpoints
-- Webhooks and callback handlers
-- Background jobs and schedulers
-- CLI/admin commands
-- File upload and download flows
-- Outbound HTTP integrations
-- Email/SMS/notification actions
-- LLM/AI input-output surfaces (if present)
+### Injection (A05)
+- SQL: raw queries or string interpolation in query builders or ORMs (`knex.raw`, `whereRaw`, `sequelize.query`) with user input. Identifiers such as sort and column names must be allow-listed.
+- NoSQL: operator injection (`$where`, `$ne`, `$gt`) from request objects merged directly into queries.
+- Command execution: `exec`, `execSync`, or `spawn` with `shell: true`, or unescaped arguments (CWE-78). Prefer `execFile` with an argument array.
+- Code execution: `eval`, `new Function`, `vm`, dynamic `require`/`import` of user-controlled paths, and unsafe deserialization (`node-serialize`, YAML `load`) (CWE-94, CWE-502).
+- Templates: server-side template injection, unescaped HTML output (XSS, CWE-79), and header or response splitting.
+- Path traversal (CWE-22): `path.join` with user input and no resolve-and-prefix check; zip slip; symlinks.
+- Log injection: unsanitized newlines or control characters in logs (CWE-117).
 
-For each surface, note:
-- Entry point
-- Trust boundary crossed
-- Data sources controlled by users or third parties
-- High-impact sinks (DB write, shell execution, file I/O, auth decisions, money/state changes)
+### JavaScript-specific
+- **Prototype pollution** (CWE-1321): deep merges or `Object.assign` of request data, or `obj[userKey] = value` with keys like `__proto__`, `constructor`, or `prototype`. Also check vulnerable versions of merge/clone libraries.
+- **ReDoS** (CWE-1333): catastrophic-backtracking regexes run on user input.
+- **Mass assignment** (CWE-915): request bodies spread into DB inserts or updates without a field allow-list (`role`, `balance`, `userId`, `isAdmin`).
+- **Type confusion**: arrays or objects where strings are expected (`?id[]=1`, `{ "$gt": "" }`). The validation schema must enforce types.
 
-### 2. Trace tainted input to dangerous sinks
+### SSRF (CWE-918)
+- Outbound requests to user-supplied URLs (webhooks, image fetchers, link previews, imports). They need an allow-list, blocking of private, loopback, link-local, and metadata IPs (`169.254.169.254`) *after* DNS resolution, redirect limits, and timeouts.
 
-Perform end-to-end tracing:
-- Entry source -> parsing -> validation -> transformation -> sink
-- Mark where validation is missing, weak, or bypassable
-- Verify canonicalization order (decode/normalize before validation)
-- Check for secondary injection after transformation or templating
+### Secrets and cryptography (A04)
+- No hardcoded keys, tokens, or passwords, and no committed `.env` files or credentials in CI config. Check git history when relevant.
+- No secrets in logs, error messages, client bundles, or startup output.
+- No MD5 or SHA-1 for security purposes, no `Math.random()` for tokens (use `crypto.randomBytes` or `randomUUID`), no homemade crypto, and no static IVs.
+- Webhook signatures are verified against the **raw** body with a timing-safe comparison, plus replay protection (timestamp or event ID).
 
-Treat all of these as untrusted by default:
-- Request params/body/query/headers/cookies
-- File names/content/metadata
-- Webhook payloads
-- Message queue events
-- Third-party API responses
-- LLM output used in downstream actions
+### Configuration (A02)
+- CORS: no `*` with credentials and no reflected `Origin`.
+- Security headers: CSP, HSTS, `X-Content-Type-Options`, `frame-ancestors` (Helmet or equivalent).
+- No debug mode, stack traces, or source maps exposed in production. No exposed `.env`, admin, metrics, or health endpoints that leak internals.
+- Proxy trust: client IP taken from `X-Forwarded-For` only behind a trusted proxy. Otherwise rate limits and IP bans can be bypassed by spoofing the header.
 
-### 3. Validate authentication, authorization, and tenancy boundaries
+### Files and uploads
+- Size, count, and time limits; extension *and* content (magic-byte) checks; server-generated file names; storage outside the web root; safe archive extraction; temp files cleaned up.
 
-Audit authn/authz decisions in the exact order used at runtime:
-- Authentication enforcement on all protected actions
-- Token/session validation strength (signature, expiry, issuer, audience)
-- Role and permission checks at handler and service layers
-- Resource ownership checks before read/write/delete
-- Cross-tenant isolation guarantees
-- State-changing actions protected from CSRF where cookie auth is used
+### Business logic and integrity (A06, A08)
+- Race conditions and TOCTOU around balances, quotas, inventory, and one-time actions. Look for missing transactions, missing row locks, and read-then-write sequences.
+- Double-spend and replay: idempotency keys, one-time tokens and links, and stale events.
+- Multi-step flows that can be reordered or skipped, and state transitions that grant privileges.
+- Partial failure followed by a retry with manipulated state.
 
-Look for common logic flaws:
-- Route guarded but internal service callable without guard
-- Read checks present but update/delete checks missing
-- Admin bypass flags reachable by untrusted input
-- Confused deputy flows (internal trusted calls reusing user input)
+### Availability
+- Rate limiting on sensitive and expensive endpoints, keyed sensibly (user plus IP).
+- Body-size limits, pagination caps, and query cost limits.
+- Timeouts on outbound calls. Caps on concurrent connections (SSE/WebSocket), queue backpressure, and bounded retries.
+- Unhandled promise rejections or exceptions that crash the process.
 
-### 4. Hunt injection classes systematically
+### Supply chain (A03)
+- Run or recommend `npm audit` and check for known-vulnerable versions.
+- A lockfile is committed and CI uses `npm ci`.
+- Look for suspicious or typosquatted packages, `postinstall` scripts, git or URL dependencies, and abandoned packages in security-critical paths.
 
-Test each sink category explicitly:
-- SQL/ORM/raw query construction
-- NoSQL operators and query object merging
-- Shell/process execution (`exec`, `spawn`, `execFile`, task runners)
-- Template rendering and server-side HTML generation
-- Path/file system operations (traversal, zip slip, symlink abuse)
-- Header injection and response splitting
-- Log injection in structured and unstructured logs
+### Errors and logging (A09, A10)
+- Internal errors, stack traces, and SQL or schema details are not sent to clients.
+- Code fails closed: an exception in an auth or validation check must deny, not allow.
+- Auth failures and suspicious activity are logged, with no tokens or PII in the logs.
+- Critical operations leave an audit trail.
 
-For each suspected injection, verify exploitability with:
-- Input control
-- Reachability to sink
-- Missing neutralization/parameterization
-- Realistic payload path to impact
+### LLM features (OWASP LLM Top 10)
+- Prompt injection, direct and indirect (through fetched content, documents, or tool results).
+- Model output used in SQL, shell, HTML, or tool calls without validation (improper output handling).
+- Excessive agency: tools with broader permissions than the user has.
+- System prompt or secret leakage, and sensitive data sent to the model.
+- Unbounded consumption: token and cost limits, and rate limits per user.
 
-### 5. Audit secrets, crypto, and sensitive data handling
+## Severity
 
-Check for:
-- Hardcoded credentials, tokens, private keys
-- Secrets in code, config, logs, or error messages
-- Weak cryptography (deprecated hashes, weak randomness, DIY crypto)
-- Missing key rotation or key separation practices
-- Sensitive data stored or transmitted without proper protection
+- **Critical**: RCE, auth bypass, cross-user data access at scale, or theft of secrets or credentials.
+- **High**: account takeover, privilege escalation, IDOR on sensitive data, stored XSS, SSRF to internal services, or money/state manipulation.
+- **Medium**: exploitation needs preconditions, or the impact is limited (reflected XSS, missing rate limits on sensitive actions, information leakage).
+- **Low**: defense-in-depth gaps with little direct impact.
+- **Informational**: hardening suggestions.
 
-Also validate operational exposure:
-- Debug endpoints exposing config
-- Verbose startup logs leaking env values
-- Stack traces revealing secret-bearing objects
+## Output
 
-### 6. Analyze file handling and deserialization risks
+Always output these sections, in this order.
 
-Review all file and parser boundaries:
-- MIME/type validation and content sniffing mismatch
-- Archive extraction safety (zip slip/path traversal)
-- Unsafe parser/deserializer usage
-- Image/PDF/document processing pipelines
-- Temporary file handling and cleanup race conditions
+**0. Security score**, followed by a one-sentence rationale:
 
-Confirm safe constraints:
-- Size limits, count limits, timeout limits
-- Allowed extension and MIME policy
-- Storage path isolation and permission model
+```
+**Security Score**: XX / 100 - [Excellent 90-100 | Good 75-89 | Fair 55-74 | Poor 35-54 | Critical Risk 0-34]
+```
 
-### 7. Review business logic and state integrity
+Start at 100 and deduct 20 per Critical, 10 per High, 5 per Medium, and 2 per Low finding (0 for Informational), with a minimum of 0.
 
-Focus on domain abuse scenarios static scanners miss:
-- Multi-step flows that can be reordered
-- Double-spend or duplicate action windows
-- Missing idempotency on retries
-- Race conditions around balances/quotas/inventory
-- Privilege escalation through workflow state transitions
+**1. Summary**: `X findings total (Y Critical, Z High, A Medium, B Low, C Informational)`
 
-Try adversarial sequences:
-- Concurrent requests
-- Replay of stale tokens/links/events
-- Partial failure then retry with manipulated state
-
-### 8. Evaluate availability and abuse resistance
-
-Check denial-of-service and abuse controls:
-- Rate limiting coverage and key strategy
-- Payload size/body parser limits
-- Expensive query and pagination controls
-- Job queue backpressure and retry storms
-- Timeout, circuit breaker, and resource caps
-
-Confirm sensitive operations have stronger controls than read-only endpoints.
-
-### 9. Assess dependency and supply-chain risk
-
-Inspect:
-- Dependency health and vulnerable version patterns
-- Typosquatted or suspicious packages
-- Install scripts and postinstall behavior
-- Excessive dependency trust for security-critical logic
-- Lockfile integrity and reproducibility signals
-
-Treat supply-chain findings as exploitable when there is credible execution path.
-
-### 10. Verify observability and failure behavior
-
-Audit error and logging behavior for security impact:
-- Internal errors exposed to clients
-- Logs containing secrets/tokens/PII
-- Missing security events for authz failures and suspicious activity
-- Inconsistent audit trail on critical operations
-
-A secure system must fail closed where appropriate.
-
----
-
-## Strict Audit Rules
-
-### 1. Prioritize high-impact issues first
-
-Focus on vulnerabilities that could lead to:
-- Remote code execution (RCE)
-- Data breach / exfiltration (PII, credentials, tokens)
-- Privilege escalation / auth bypass
-- Account takeover
-- Denial of service (resource exhaustion)
-- Supply-chain compromise
-
-### 2. Structured finding format
-
-For every finding, output in exactly this format:
+**2. Critical and High findings**, Critical first, each in full format:
 
 ```
 ---
 **Severity**: Critical | High | Medium | Low | Informational
-**CWE / OWASP reference**: e.g. CWE-89, OWASP A03:2021 Injection
-**Location**: file path + line/range or function name
-**Vulnerability type**: short name (e.g. SQL Injection via string concatenation)
-**Description**: clear plain-English explanation of the flaw
-**Attack vector / exploit path**: step-by-step realistic attacker scenario
+**CWE / OWASP**: e.g. CWE-89, OWASP A05:2025 Injection
+**Location**: file path + line range or function
+**Vulnerability**: short name (e.g. SQL injection via whereRaw interpolation)
+**Description**: plain-English explanation of the flaw
+**Exploit path**: step-by-step realistic attacker scenario
 **Impact**: what the attacker gains
-**Evidence**: relevant code snippet
-**Recommended fix**: concrete secure code change with example diff or rewritten snippet
+**Evidence**: the relevant code snippet
+**Fix**: concrete corrected code or diff
 **Confidence**: High | Medium | Low
 ---
 ```
 
-### 3. Analysis depth
+**3. Medium, Low, and Informational findings**, in the same format but more concise.
 
-Trace these data flows and check these areas:
+**4. Positives**: security practices already done well (validation, parameterized queries, rate limiting, headers).
 
-#### Data flow tracing
-- User input -> sanitization -> sinks (DB, shell, templates, HTTP calls, LLM prompts)
-- Query parameters, request bodies, headers, cookies, file metadata - all must be treated as untrusted
+**5. Recommendations**: cross-cutting hardening, such as centralized validation, a secrets manager, security headers, automated scanning (`npm audit`, Semgrep, Snyk, OWASP ZAP), and tests for authorization and concurrency.
 
-#### Authentication and authorization
-- Are protected routes consistently guarded by auth middleware?
-- Are role/permission checks and ownership checks enforced per resource?
-- Missing CSRF/XSRF protection on state-changing cookie-auth endpoints
-- Session fixation, weak JWT verification, token leakage in logs/errors
-
-#### Injection
-- SQL injection via raw queries or unsafe interpolation
-- NoSQL injection patterns (`$where`, operator injection)
-- Command injection in `exec`, `spawn`, `execFile`, worker/job runners
-- Template injection / server-side rendering injection
-
-#### Secrets and crypto
-- Hardcoded credentials, API keys, tokens in source files
-- Weak crypto (MD5, SHA-1, weak RNG, custom crypto misuse)
-- Secrets accidentally committed to repo (`.env`, config files, CI files)
-
-#### Input validation
-- Missing or bypassable validation on route handlers
-- Mass assignment / over-posting risks
-- File upload handling (MIME/type bypass, path traversal, zip slip)
-
-#### Configuration and infrastructure
-- CORS wildcard or unsafe origin reflection
-- Debug mode / verbose errors in production
-- Missing rate limiting on sensitive endpoints
-- Insecure headers (CSP, HSTS, X-Content-Type-Options, etc.)
-- Exposed `.env`, admin routes, metrics endpoints
-
-#### Dependencies
-- Flag known-vulnerable version patterns (even without exact versions)
-- Suspicious package names, typosquatting, unusual install sources
-- Dangerous postinstall scripts or broad transitive risk indicators
-
-#### LLM / AI features (if present)
-- Prompt injection risks
-- Insecure output handling
-- Model DoS vectors
-
-#### Edge cases
-- Race conditions (TOCTOU), especially around balances, orders, inventory, or quota updates
-- Improper error handling leaking stack traces, schema, or config
-- Log injection and unsafe structured logging usage
-
----
-
-## Output Structure
-
-Always output in this exact order:
-
-### 0. Security Score
-Open with a single security score from 0 to 100 representing the overall security posture of the audited code:
-
-```
-**Security Score**: XX / 100 - [label]
-```
-
-Score labels:
-| Range | Label |
-|---|---|
-| 90-100 | Excellent |
-| 75-89 | Good |
-| 55-74 | Fair |
-| 35-54 | Poor |
-| 0-34 | Critical Risk |
-
-Scoring methodology - start at 100 and deduct:
-- Critical finding: -20 each
-- High finding: -10 each
-- Medium finding: -5 each
-- Low finding: -2 each
-- Informational: -0 (noted only)
-- Floor is 0; cap is 100.
-
-Follow the score with a one-sentence rationale, for example: "Score reduced primarily by two auth bypass vectors and a missing ownership check on mutation endpoints."
-
-### 1. Summary
-```
-**Summary**: X findings total (Y Critical, Z High, A Medium, B Low, C Informational)
-```
-
-### 2. Top Findings - Critical and High only (sorted by severity)
-List all Critical findings first, then High, with full structured format for each.
-
-### 3. Medium / Low / Informational
-List remaining findings - use the same structured format but can be more concise.
-
-### 4. Positives
-Briefly note security practices already done well (for example, robust validation, rate limiting middleware, parameterized queries, secure headers).
-
-### 5. General Recommendations
-Cross-cutting advice, for example:
-- Add centralized validation middleware
-- Use a secrets manager instead of plaintext env files where possible
-- Enforce secure HTTP headers with Helmet or equivalent
-- Run Semgrep / Snyk / npm audit for automated confirmation
-- Add business-logic test cases for authorization and concurrency-sensitive flows
-
----
-
-## Tone and Style
-
-- Professional, precise, zero fluff
-- Only flag genuinely exploitable issues or bad practices with real risk - avoid false positives
-- Every finding must include a concrete fix
-- If no serious issues are found, still list positives and hardening suggestions
-
----
-
-## Audit Methodology
-
-1. Reconnaissance - Identify all trust boundaries, externally reachable inputs, and high-impact sinks.
-2. Critical-path analysis - Audit authn/authz, injection sinks, and secret handling before lower-risk areas.
-3. Data-flow verification - Trace untrusted input end-to-end and confirm validation, normalization, and encoding are correctly ordered.
-4. Exploitability testing - For each suspected weakness, verify realistic attacker control, reachability, and impact.
-5. Business-logic review - Analyze multi-step workflows, concurrency, and state-transition abuse paths.
-6. Availability review - Validate rate limits, resource caps, retries, and expensive-operation protections.
-7. Dependency review - Assess supply-chain and vulnerable dependency patterns with execution-path context.
-8. Reporting - Output findings in the required structured format, sorted by severity, with concrete fixes and confidence.
-
-Begin the audit now.
+If nothing serious is found, say so plainly, then still list the positives and hardening suggestions.

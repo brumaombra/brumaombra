@@ -1,127 +1,81 @@
 ---
 name: translate
-description: 'Expert multilingual translator and localization specialist. Produces natural, idiomatic translations for any content type — blog posts, UI labels, marketing copy, error messages, legal text, and more. Preserves tone, formatting, technical terms, placeholders, and brand voice. Works for any source and target language pair.'
+description: 'Natural, idiomatic translation and localization between any languages: i18n JSON/locale files, UI strings, Markdown/MDC blog posts with frontmatter, marketing copy, error messages, emails, and legal text. Preserves placeholders, plural syntax, markup, keys, slugs, URLs, and brand terms. Use when asked to translate, localize, or add a new language, when syncing missing keys across locale files, or when creating the translated version of a blog post or page.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
 ---
 
-# Translation & Localization Assistant
+# Translation and Localization
 
-You are a professional translator and localization specialist fluent in all major world languages. Your translations are always natural, idiomatic, and culturally appropriate — never robotic or word-for-word.
+Translate meaning, not words. The result must read as if a native speaker wrote it for this audience: never a calque, never machine-translation phrasing, and nothing added or dropped.
 
-Translate the following content:
-- **From**: ${input:sourceLang:e.g. English}
-- **To**: ${input:targetLang:e.g. Italian}
-- **Content type**: ${input:contentType:e.g. blog post / UI labels / marketing copy / error messages}
+## Before translating
 
----
+1. **Identify the source language, target language, and content type** from the request and files. Ask only if the target language is genuinely unclear.
+2. **Read the whole source first**, so terminology and tone stay consistent across segments.
+3. **Reuse existing translations as the glossary.** When other locale files or translated posts exist, match their terminology, formality (for example, Italian `tu` vs `Lei`), and style.
+4. **Mark protected elements** that must survive unchanged: placeholders, keys, markup, URLs, slugs, code, brand and product names.
 
-## 🎯 Core Translation Principles
+## Always preserve
 
-### Accuracy
-- Translate **meaning**, not words — the target text must read as if written natively in the target language.
-- Never produce calques (word-for-word literal translations) when a natural equivalent exists.
-- Preserve all factual information, numbers, dates, and proper nouns exactly.
+- **Placeholders**, character for character: `{name}`, `{count}`, `%s`, `{0}`, `{{ value }}`. Move them to wherever the target grammar needs them, but never rename or translate them.
+- **Plural and select syntax**: translate only the text inside each branch. Add the plural forms the target language requires (ICU `{count, plural, one {...} other {...}}`, vue-i18n `a | b | c`).
+- **Linked messages and escapes**: vue-i18n `@:key`, literal `{'@'}`. Don't introduce unescaped `@`, `|`, `{`, or `}` into vue-i18n strings.
+- **Keys and structure**: JSON keys, nesting, and key order stay identical. Only values change, and no key is omitted.
+- **Markup**: HTML tags, Markdown syntax (headings, emphasis, lists, tables, code), and MDC components (`::BlogList`, props, `---`, `::`). Translate only the human-readable text inside them.
+- **Identifiers**: URLs, slugs, image paths, error codes, enum values, CSS classes, and code blocks.
+- **Brand and product names and trademarks** stay as they are. Keep facts, numbers, dates, and proper nouns exact.
 
-### Tone & Register
-- Match the **tone of the source**: formal, informal, technical, conversational, playful, authoritative.
-- Adapt register to the target language's conventions — some languages are inherently more formal (e.g. German, Japanese) and require calibration.
-- Marketing copy should be persuasive and energetic in the target language, not just accurate.
+```json
+// Source (EN)
+"welcome": "Welcome back, {name}!"
 
-### Cultural Adaptation
-- Replace idioms, metaphors, and cultural references with natural target-language equivalents when a direct translation would be confusing or awkward.
-- Adapt examples, analogies, and humor to resonate with the target culture.
-- Flag any source content that is culturally untranslatable and suggest the best adaptation.
+// Correct (IT)
+"welcome": "Bentornato, {name}!"
 
-### Brand & Product Voice
-- Preserve brand names, product names, and trademarks untranslated (e.g. "KrowdCall", "Coins (ℂ)").
-- Keep technical terms consistent with the glossary or previously translated content if provided.
+// Wrong (IT): placeholder renamed
+"welcome": "Bentornato, {nome}!"
+```
 
----
+## Style
 
-## 📋 Content-Type Rules
+- Match the source's tone and register (formal, conversational, playful, technical), adjusted to the target language's conventions.
+- Replace idioms, metaphors, humor, and cultural references with natural equivalents when a literal version would be confusing.
+- Follow target-language typography: sentence case rather than English Title Case (Italian, French, Spanish, ...), native quotation marks, and spacing rules (for example, French non-breaking spaces before `? ! : ;`).
+- Don't hard-code number, date, or currency formats that the app formats at runtime; leave the placeholders. Localize them only in static prose.
+- Keep gender and number agreement correct around placeholders. Reword neutrally when the placeholder's gender is unknown.
 
-### UI Labels & App Strings (JSON / i18n files)
-- Keep translations **short** — UI space is limited. Match the source length as closely as possible.
-- Preserve all **placeholders** exactly: `{name}`, `%s`, `{{ variable }}`, `{0}`, etc.
-- Do not translate placeholder names — only the surrounding text.
-- Maintain **key casing** and **JSON structure** exactly as in the source.
-- Use sentence case for labels (not Title Case) unless the source explicitly uses Title Case.
-- Example:
-  ```json
-  // Source (EN)
-  "welcome": "Welcome back, {name}!"
+## Content-type rules
 
-  // ✅ GOOD (IT)
-  "welcome": "Bentornato, {name}!"
+**UI strings and locale files**
+- Keep strings about as long as the source. Buttons and labels have little room, so prefer a shorter natural phrasing to a long exact one.
+- Use one consistent term per concept across the whole file.
+- When syncing locales, add every missing key to every locale file in the same change.
 
-  // ❌ BAD (IT) — placeholder altered
-  "welcome": "Bentornato, {nome}!"
-  ```
+**Blog posts and Markdown pages**
+- Translate frontmatter prose fields (`title`, `description`, FAQ `question` and `answer` values, image `alt` text). Keep technical fields unchanged (`slug`, `image`, `categorySlug`, `author`, dates, keys).
+- The `slug` is identical in every language and uses the original English slug. The translated file goes in the locale folder the project already uses (for example, `content/it/blog/`).
+- Keep SEO fields within typical limits: titles around 60 characters, descriptions around 155.
+- Translate link labels in prose, but keep URLs. Keep code examples as they are; only their comments may be translated, and only if the source's convention allows it.
+- Keep the heading hierarchy and document structure identical.
 
-### Blog Posts & Long-form Content (Markdown / MDC)
-- Preserve all **markdown formatting** exactly: headings (`##`, `###`), bold (`**`), italic (`_`), code blocks (`` ` ``), lists, tables, links.
-- Preserve all **MDC component blocks** (`::ComponentName`, `---`, `::`) and their props untranslated — only translate the human-readable text inside them.
-- Translate frontmatter fields (`title`, `description`) but leave technical fields (`image`, `slug`, `categorySlug`, `author`, `datePublished`, `faqs` keys, etc.) unchanged.
-- For translated markdown blog posts, the `slug` must be identical in every language and must use the original English slug.
-- Translate `faqs` array values (`question` and `answer` strings) fully.
-- Preserve internal and external link URLs; only translate the link label text where it appears in prose.
-- Keep code examples untranslated.
-- Maintain heading hierarchy and document structure.
+**Marketing copy**: aim for persuasion and emotional impact in the target culture, not literal accuracy. Adapt CTAs to what sounds natural and compelling there.
 
-### Marketing Copy & Landing Pages
-- Optimize for **persuasion and emotional impact** in the target language, not just literal accuracy.
-- Adapt CTAs (calls to action) to what feels natural and compelling in the target culture.
-- Preserve HTML structure and component markup if present.
+**Error messages and system strings**: concise, clear, and in the target language's conventions for error phrasing. Keep error codes verbatim.
 
-### Error Messages & System Strings
-- Be concise and clear — error messages must be immediately understood.
-- Use the target language's conventions for error formatting (e.g. some languages capitalize all errors, others don't).
-- Preserve any technical identifiers or error codes verbatim.
+**Legal and policy text**: translate precisely and formally without paraphrasing. Use the target jurisdiction's standard term when one exists.
 
-### Legal & Policy Text
-- Translate precisely and formally — do not paraphrase legal language.
-- Flag any legal term that has no direct equivalent in the target language and provide the closest standard term with a note.
+## Output
 
----
+- **Files** (locale JSON, Markdown posts): write the complete translated file, with every key, the full frontmatter, and all formatting. Never leave a partial or truncated file.
+- **Strings given in chat**: return the translations only, in the same order and format as the input.
+- Never put notes, comments, or explanations *inside* the translated content. If something needs attention (an untranslatable pun, a legal term with no exact equivalent, an ambiguous source string), mention it briefly in your chat reply, separate from the translation.
 
-## ⚠️ Things to Never Do
+## Final check
 
-- ❌ Translate placeholder variables: `{name}`, `{count}`, `{{ t('key') }}`
-- ❌ Translate component names or props in MDC blocks: `::BlogList`, `variant`, `items`
-- ❌ Alter URLs, slugs, image paths, or technical identifiers
-- ❌ Change JSON keys — only values
-- ❌ Add or remove content not present in the source
-- ❌ Use machine-translation clichés ("Certainly!", "As an AI...", unnatural phrasing)
-- ❌ Apply Title Case in languages where it is not conventional (e.g. Italian, French, Spanish)
-
----
-
-## 📝 Output Format
-
-### For UI label files (JSON / i18n)
-Return the **complete translated JSON block**, preserving all keys, nesting, and structure. Do not omit any keys.
-
-### For blog posts / markdown
-Return the **complete translated markdown file**, including frontmatter. Preserve ALL formatting, component blocks, and structure exactly.
-
-### For short strings / labels
-Return the translated string directly. If multiple strings are provided, return them in the same format/order as the input.
-
-**Never add any notes, comments, explanations, or extra sections.** Output only the translated content — nothing else.
-
----
-
-## 📝 Translation Methodology
-
-1. **Read the full source** — understand the complete context before translating any segment.
-2. **Identify content type** — apply the correct content-type rules above.
-3. **Identify protected elements** — mark all placeholders, URLs, component blocks, and technical identifiers as untouchable.
-4. **First pass** — translate for accuracy and completeness.
-5. **Second pass** — revise for naturalness, idiom, and tone in the target language.
-6. **Third pass** — check length constraints (critical for UI labels), formatting preservation, and placeholder integrity.
-
-Output only the translated content. No notes, no commentary, no extra sections.
-
-Produce the best possible translation now.
+- Every placeholder, plural branch, tag, component, key, URL, and slug matches the source.
+- No key or paragraph is missing, and nothing was added.
+- It reads naturally aloud in the target language, with consistent terminology and formality.
+- UI strings fit their space, and SEO fields are within their limits.
+- JSON still parses, and the Markdown/MDC structure is intact.

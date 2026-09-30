@@ -1,204 +1,75 @@
 ---
 name: security-audit-nuxt
-description: 'Security audit assistant for Nuxt projects. Finds high-impact vulnerabilities and reports severity, evidence, exploit paths, and concrete fixes.'
+description: 'Security audit for Nuxt 3/4 apps (SSR + Nitro server): runtimeConfig leaks, SSR payload exposure, server routes without auth, v-html/Markdown XSS, routeRules and headers, SSRF via $fetch, open redirects, Firebase token checks, Knex queries, SSE endpoints, and rate limiting. Reports scored findings with severity, exploit path, evidence, and fix. Use when asked to audit, security-review, pentest, harden, or find vulnerabilities in a Nuxt project.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
 ---
 
-# Nuxt Security Audit Assistant
+# Nuxt Security Audit
 
-You are a senior application security engineer and red-team expert with deep knowledge of:
+A Nuxt app is a Node.js backend (Nitro/h3) plus an SSR frontend. **Load the `security-audit-node` skill first** and follow its workflow, checklist, severity scale, and output format. This skill adds the Nuxt-specific attack surface and checks. If that skill isn't available, use the same method: map the surface, trace input to sinks, verify exploitability, and report scored findings with fixes.
 
-- OWASP Top 10 (2021 + 2025 LLM edition)
-- CWE Top 25 Most Dangerous Software Weaknesses
-- Most common vulnerabilities in AI-generated code (SSRF CWE-918, insecure deserialization CWE-502, injections, hardcoded credentials CWE-798, path traversal CWE-22, XSS CWE-79, log injection, etc.)
-- Business logic flaws, race conditions, insecure direct object references (IDOR), broken access control, supply-chain risks (outdated deps, malicious packages)
-- Modern threats: prompt injection / jailbreaks in LLM features, training data leakage risks, model DoS
+## Recon: read these first
 
-Your mission: Perform a thorough, context-aware security audit of the provided codebase or selected files. Act like a professional pentester + SAST tool combo, but with human-level reasoning to reduce false positives and catch subtle, exploitable issues that static tools miss.
+1. `nuxt.config.ts`: `runtimeConfig` (private vs `public`), `routeRules`, `nitro` (tasks, prerender, storage), `sourcemap`, `devtools`, modules.
+2. `package.json` and the lockfile: Nuxt, Nitro, and module versions.
+3. `server/middleware/`: global guards, rate limiting, security headers.
+4. `server/api/` and `server/routes/`: every file is a public endpoint unless it checks auth itself.
+5. Auth: server helpers (for example, `server/firebase/`) and client `app/middleware/`.
+6. Data layer and validation (for example, `server/db/`, `server/utils/objectsSchemas.js`).
+7. `server/tasks/`, `server/plugins/`, SSE/WebSocket handlers, and webhook handlers.
+8. `.env*`, `.gitignore`, and the error handling and logging helpers.
 
-Before auditing, **read the key high-risk files in the codebase**:
-1. Authentication & authorization logic (`server/api/`, `middleware/`, `server/firebase/`)
-2. Input handling / sanitization (API route handlers, Zod schemas, `server/utils/`)
-3. Database queries (`server/db/`)
-4. External HTTP calls and shell commands
-5. File/system access (uploads, path handling)
-6. Secrets & config (`nuxt.config.ts`, `.env` files, plugins)
-7. Error handling & logging (`server/sentry/`)
+A typical stack in these projects is Firebase Auth (client) with the Admin SDK (server), MySQL via Knex, Zod validation, Sentry, and self-hosted deployment behind a reverse proxy. Adapt the checks to whatever `package.json` shows.
 
----
+## Nuxt-specific checks
 
-## 🎯 Project Context
+### Server endpoints
+- Every file in `server/api/` and `server/routes/` is reachable without auth unless it authenticates itself. **Client-side route middleware (`app/middleware/auth.js`) and `ssr: false` are not security.** The server handler must enforce auth, ownership, and roles.
+- `getRouterParam`, `getQuery`, and `readBody` values are validated with a schema (`readValidatedBody` / `getValidatedQuery`, or Zod) before use. Watch for arrays and objects where strings are expected.
+- Handlers call the data layer and never build queries from raw input. Check `knex.raw` and `whereRaw` for interpolation, and allow-list sort and filter columns.
+- Methods are routed by file suffix (`.get.js`, `.post.js`). A method-less file answers every method, including GET for a state-changing action.
+- The auth token check on the server verifies the ID token with the Admin SDK (`verifyIdToken`, with `checkRevoked` for sensitive actions). Roles come from custom claims or the DB, never from the request body or a client-set cookie.
 
-This is a **Nuxt** application (SSR + CSR hybrid) with the following stack:
+### Secrets and SSR data leaks
+- `runtimeConfig.public` and any `NUXT_PUBLIC_*` variable end up in the client bundle. No secrets, admin keys, or private API keys may be there.
+- Server-only modules (Admin SDK, DB, secret keys) are never imported from `app/`, composables, or `shared/`.
+- The SSR payload (`window.__NUXT__`, `useState`, `useFetch` / `useAsyncData` results) doesn't carry other users' data, internal IDs, tokens, or full DB rows. Trim responses to the fields the page needs.
+- Production has client source maps and devtools disabled. Check `.output/public` for leaked `.map` or `.env` files.
 
-| Item | Detail |
-|---|---|
-| **Framework** | Nuxt + Nitro server |
-| **Auth** | Firebase Auth (client) + Firebase Admin SDK (server) |
-| **Database** | MySQL via Knex.js |
-| **Validation** | Zod |
-| **Deployment** | Self-hosted (XAMPP / Linux server) |
-| **Sensitive areas** | API routes under `server/api/`, Firebase token verification, DB queries, SSE endpoints, rate limiting middleware |
+### XSS and content
+- `v-html`, `innerHTML`, and `useHead({ innerHTML })` with user or DB content. Sanitize (DOMPurify) or render as text.
+- Markdown/MDC rendering of user-submitted content: raw HTML, `javascript:` links, and components usable from content.
+- JSON-LD `useHead` scripts built from user data (`</script>` breakout).
+- Dynamic `:href` or `:src` bindings from user data (`javascript:` URLs).
 
----
+### Redirects, SSRF, and proxying
+- `navigateTo(route.query.redirect)` or `sendRedirect(event, input)` without an allow-list of relative paths, especially with `{ external: true }`.
+- Server-side `$fetch` or `fetch` to user-supplied URLs (SSRF). Private, loopback, and metadata IPs must be blocked after DNS resolution.
+- Proxying cookies or headers to third parties (`useRequestHeaders(['cookie'])` forwarded outside your own API).
 
-## 🔴 Strict Audit Rules
+### routeRules, headers, and middleware
+- `routeRules` or middleware set CSP, HSTS, `X-Content-Type-Options`, `frame-ancestors`/`X-Frame-Options`, and `Referrer-Policy`. Check whether `nuxt-security` or custom headers are used.
+- Cache rules (`swr`, `isr`, `cache`, `prerender`) are **never** applied to personalized or authenticated routes and APIs. A cached private response is served to other users.
+- CORS on `server/api` is not `*` with credentials and doesn't reflect `Origin`.
+- The global security middleware can't be bypassed through locale prefixes, trailing slashes, encoded paths, or `/_nuxt/` and `/__nuxt_island/` routes.
+- Rate-limit keys use the real client IP. `getRequestIP(event, { xForwardedFor: true })` is safe only behind a trusted proxy that overwrites the header.
 
-### 1. Prioritize high-impact issues first
+### Real-time endpoints and tasks
+- SSE/WebSocket handlers authenticate and check access per resource on connect **and** on every broadcast (for example, access revoked, private resource). Cap connections per user or IP, and remove closed connections so they don't leak memory.
+- Nitro tasks are triggered only by the scheduler. There is no reachable `/_nitro/tasks` or dev endpoint in production, and no API route runs a task with user input.
+- Scheduled jobs that move money or change state are idempotent and safe if two instances run at once.
 
-Focus on vulnerabilities that could lead to:
-- Remote code execution (RCE)
-- Data breach / exfiltration (PII, credentials, tokens)
-- Privilege escalation / auth bypass
-- Account takeover
-- Denial of service (resource exhaustion)
-- Supply-chain compromise
+### Cookies and CSRF
+- Auth cookies set by the server (for example, `set-cookie` endpoints) are `HttpOnly`, `Secure`, `SameSite=Lax/Strict`, and short-lived, and the cookie value is re-verified on every request.
+- State-changing endpoints authenticated by cookie have CSRF protection (SameSite plus an Origin check, or a token). GET handlers never change state.
 
-### 2. Structured finding format
+### Business logic
+- Balances, trades, quotas, and resolutions run in DB transactions with row locks (`forUpdate`) and re-check state inside the transaction.
+- Client-computed values (prices, totals, costs, outcomes) are recomputed on the server, never trusted.
+- Ownership is checked in the data layer for every update, delete, and resolve action, not only in the UI.
 
-For **every finding**, output in exactly this format:
+## Report
 
-```
----
-**Severity**: Critical | High | Medium | Low | Informational
-**CWE / OWASP reference**: e.g. CWE-89, OWASP A03:2021 Injection
-**Location**: file path + line/range or function name
-**Vulnerability type**: short name (e.g. SQL Injection via string concatenation)
-**Description**: clear plain-English explanation of the flaw
-**Attack vector / exploit path**: step-by-step realistic attacker scenario
-**Impact**: what the attacker gains
-**Evidence**: relevant code snippet
-**Recommended fix**: concrete secure code change with example diff or rewritten snippet
-**Confidence**: High | Medium | Low
----
-```
-
-### 3. Analysis depth
-
-Trace these data flows and check these areas:
-
-#### Data flow tracing
-- User input → sanitization → sinks (DB, shell, templates, HTTP calls, LLM prompts)
-- Query parameters, request bodies, headers, cookies — all must be treated as untrusted
-
-#### Authentication & authorization
-- Firebase token verification: is `getCurrentUser()` called on every protected route?
-- Role/permission checks: is ownership verified before returning or mutating data?
-- Missing CSRF/XSRF protection on state-changing endpoints
-- Session fixation, token leakage in logs or errors
-
-#### Injection
-- SQL injection via raw Knex queries or string interpolation
-- NoSQL injection patterns
-- Command injection in any `exec`/`spawn` calls
-- Template injection
-
-#### Secrets & crypto
-- Hardcoded credentials, API keys, tokens in source files
-- Weak crypto (MD5, SHA-1, no salt, weak RNG)
-- Secrets accidentally committed to the repo (`.env`, `knexfile.js`, `nuxt.config.ts`)
-
-#### Input validation
-- Missing or bypassable Zod validation on API handlers
-- Mass assignment / over-posting risks
-- File upload handling (type bypass, path traversal)
-
-#### Configuration & infrastructure
-- CORS `*` wildcard
-- Debug mode / verbose errors in production
-- Rate limiting gaps on sensitive endpoints
-- Exposed `.env` or config endpoints
-
-#### Dependencies
-- Flag known-vulnerable version patterns (even without exact versions)
-- Suspicious package names or unusual install sources
-
-#### LLM / AI features (if present)
-- Prompt injection risks
-- Insecure output handling
-- Model DoS vectors
-
-#### Edge cases
-- Race conditions (TOCTOU) — especially on Coin balance updates and market trades
-- Improper error handling leaking internal stack traces, DB schema, or config
-- Log injection risks
-
----
-
-## 📋 Output Structure
-
-Always output in this exact order:
-
-### 0. Security Score
-Open with a single security score from **0 to 100** representing the overall security posture of the audited code:
-
-```
-**Security Score**: XX / 100 — [label]
-```
-
-Score labels:
-| Range | Label |
-|---|---|
-| 90–100 | Excellent |
-| 75–89 | Good |
-| 55–74 | Fair |
-| 35–54 | Poor |
-| 0–34 | Critical Risk |
-
-**Scoring methodology** — start at 100 and deduct:
-- Critical finding: −20 each
-- High finding: −10 each
-- Medium finding: −5 each
-- Low finding: −2 each
-- Informational: −0 (noted only)
-- Floor is 0; cap is 100.
-
-Follow the score with a one-sentence rationale, e.g.: *"Score reduced primarily by two auth bypass vectors and a missing ownership check on trade endpoints."*
-
-### 1. Summary
-```
-**Summary**: X findings total (Y Critical, Z High, A Medium, B Low, C Informational)
-```
-
-### 2. Top Findings — Critical & High only (sorted by severity)
-List all Critical findings first, then High, with full structured format for each.
-
-### 3. Medium / Low / Informational
-List remaining findings — use the same structured format but can be more concise.
-
-### 4. Positives
-Briefly note security practices already done well (e.g. Zod validation present, rate limiting middleware, parameterized queries).
-
-### 5. General Recommendations
-Cross-cutting advice, e.g.:
-- Add a global input validation middleware
-- Use a secrets manager instead of `.env` files
-- Enable Content-Security-Policy headers
-- Run Semgrep / Snyk for automated confirmation
-- Suggest next pentesting steps for business logic
-
----
-
-## ✍️ Tone & Style
-
-- Professional, precise, zero fluff
-- **Only flag genuinely exploitable issues or bad practices with real risk** — avoid false positives
-- Every finding must include a concrete fix
-- If no serious issues found: still list positives and hardening suggestions
-
----
-
-## 📝 Audit Methodology
-
-1. **Reconnaissance** — Read the project structure, `nuxt.config.ts`, `package.json`, middleware, and auth utilities to understand the attack surface.
-2. **High-risk first** — Audit authentication/authorization code before anything else.
-3. **Trace inputs** — Follow every user-controlled value from entry point to sink.
-4. **Check configs** — Look for secrets, insecure defaults, and CORS/CSP settings.
-5. **Deps scan** — Flag any dependency patterns associated with known CVEs.
-6. **Edge cases** — Look for race conditions in financial/trade logic (Coin balances, market resolution).
-7. **Report** — Output findings in the structured format, sorted by severity.
-8. **Next steps** — Recommend tooling (Semgrep, Snyk, OWASP ZAP) and follow-up actions.
-
-Begin the audit now.
+Use the `security-audit-node` output format: security score, summary, Critical/High findings in full format, then Medium/Low/Informational, positives, and recommendations. Cite Nuxt file paths and line ranges, and give fixes as Nuxt/Nitro code (`defineEventHandler`, `readValidatedBody`, `routeRules`, `runtimeConfig`). For follow-up, recommend `npm audit`, Semgrep, OWASP ZAP against a staging build, and tests for authorization and concurrent requests.
