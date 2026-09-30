@@ -1,6 +1,6 @@
 ---
 name: nuxt-project-structure
-description: 'Architecture and conventions for full-stack Nuxt 4 apps (srcDir app/): folder layout, Vue <script setup> order, useState stores, Tailwind 4 theming, pages and SEO, Nitro API handlers, Knex DB layer, Zod validation, Firebase Auth, i18n, SSE, Nitro tasks, and security rules. Use whenever adding a feature, creating a file, or refactoring code in a Nuxt 4 project, including pages, components, stores, API endpoints, DB functions, migrations, or nuxt.config.ts.'
+description: 'Architecture and conventions for full-stack Nuxt 4 apps (srcDir app/): folder layout, Vue script setup order, useState stores, Tailwind 4 theming, pages and SEO, Nitro API handlers, Knex DB layer, Zod validation, Firebase Auth, i18n, SSE, Nitro tasks, and security rules. Use whenever adding a feature, creating a file, or refactoring code in a Nuxt 4 project, including pages, components, stores, API endpoints, DB functions, migrations, or nuxt.config.ts.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
