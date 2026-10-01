@@ -277,6 +277,19 @@ const [market, positions] = await Promise.all([
 ]);
 ```
 
+- Always assign the result of a fetch request (`fetch`, `$fetch`, `useFetch`, API clients) to a `const`, either whole or destructured, before using it. Never use the awaited call itself as a value: no `return await $fetch(...)`, no `(await $fetch(...)).market`, no passing it inline as an argument:
+
+```js
+// Get the market from the API
+const response = await $fetch(`/api/markets/${marketId}`, { query: { lang } });
+
+// Get the user's positions from the API
+const { positions } = await $fetch('/api/positions', { query: { marketId } });
+
+// Return the market with the positions
+return { ...response.market, positions };
+```
+
 - Fire-and-forget calls (notifications, broadcasts) are left unawaited on purpose, with the comment saying what they do.
 - Always clean up timers, listeners, and connections, and centralize the cleanup in one function registered on every exit path:
 
@@ -436,6 +449,7 @@ Before finishing, confirm:
 - Only arrow functions, and destructured object parameters with defaults for multi-argument functions.
 - Every function, logical block, `Promise.all` entry, object group, test, and mock has a verb-first `//` comment, including in code you only edited; no JSDoc, no periods.
 - Guard clauses and parameter validation come first; async work is in `try / catch` with the central error handler.
+- Every fetch response is assigned to a `const` (whole or destructured), never used inline as a value.
 - Names are descriptive, booleans use `is` / `has`, constants are `UPPER_SNAKE_CASE`.
 - Imports include `.js` extensions; exports are named unless a framework requires a default.
 - Existing project conventions and skills were followed, and no security check was weakened.

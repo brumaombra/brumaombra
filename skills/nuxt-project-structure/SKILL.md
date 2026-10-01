@@ -1,6 +1,6 @@
 ---
 name: nuxt-project-structure
-description: 'Architecture and conventions for full-stack Nuxt 4 apps (srcDir app/): folder layout, Vue script setup order, useState stores, Tailwind 4 theming, pages and SEO, Nitro API handlers, Knex DB layer, Zod validation, Firebase Auth, i18n, SSE, Nitro tasks, and security rules. Use whenever adding a feature, creating a file, or refactoring code in a Nuxt 4 project, including pages, components, stores, API endpoints, DB functions, migrations, or nuxt.config.ts.'
+description: 'Architecture and conventions for full-stack Nuxt 4 apps (srcDir app/): folder layout, Vue script setup order, useState stores, Tailwind 4 theming, pages and SEO, Nitro API handlers, Knex DB layer, Zod validation, Firebase Auth, i18n, SSE, Nitro tasks, Vitest tests, and security rules. Use whenever adding a feature, creating a file, writing tests, or refactoring code in a Nuxt 4 project, including pages, components, stores, API endpoints, DB functions, migrations, tests, or nuxt.config.ts.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
@@ -29,6 +29,7 @@ Conventions for Nuxt 4 + Nitro apps built on Knex, Zod, and Firebase Auth. For g
 | Content | Nuxt Content 3 + MDC components in `app/components/content/` |
 | Images | `@nuxt/image` |
 | Jobs | Nitro experimental tasks + `scheduledTasks` |
+| Tests | Vitest + `@nuxt/test-utils` (happy-dom), in-memory SQLite via `better-sqlite3` |
 
 ## Layout
 
@@ -63,7 +64,13 @@ server/
   tasks/                   # Nitro scheduled tasks
   utils/                   # i18n.js, objectsSchemas.js, utils.js
 shared/utils/              # Code used by both app and server
+tests/
+  app/                     # Components, middleware, composables, locales (Nuxt environment)
+  server/                  # DB functions, handlers, middleware, SSE, tasks (Node environment)
+  shared/                  # Pure shared utilities (Node environment)
+  helpers/database.js      # In-memory SQLite schema + insert helpers
 nuxt.config.ts
+vitest.config.js
 ```
 
 Imports: `~/` for app code, `~~/` for `server/` and `shared/` (in Nuxt 4, `~/` points to `app/`). Keep whichever alias the file already uses, and always include the `.js` extension.
@@ -323,6 +330,80 @@ const message = t(lang, 'server.error.unauthorized');
 
 Every user-facing string goes through i18n, and every new key is added to **all** locale files in the same change.
 
+## Tests
+
+Vitest via `npm test`. Test style follows the `javascript-coding-style` skill. `vitest.config.js` splits the tests into two projects:
+
+```js
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { defineVitestProject } from '@nuxt/test-utils/config';
+import { defineConfig } from 'vitest/config';
+
+const projectRoot = dirname(fileURLToPath(import.meta.url));
+
+export default defineConfig({
+    test: {
+        projects: [
+            // Server and shared code: plain Node, the database is mocked with SQLite
+            {
+                resolve: {
+                    alias: {
+                        '~~': projectRoot,
+                        '~': resolve(projectRoot, 'app')
+                    }
+                },
+                test: {
+                    name: 'server',
+                    environment: 'node',
+                    include: ['tests/server/**/*.test.js', 'tests/shared/**/*.test.js']
+                }
+            },
+
+            // Frontend: runs inside a Nuxt app (auto-imports, i18n, useState...) in a simulated browser
+            await defineVitestProject({
+                test: {
+                    name: 'app',
+                    environment: 'nuxt',
+                    include: ['tests/app/**/*.test.js'],
+                    hookTimeout: 60000, // Booting the Nuxt app for each file can take more than the default 10s
+                    environmentOptions: {
+                        nuxt: {
+                            domEnvironment: 'happy-dom'
+                        }
+                    }
+                }
+            })
+        ]
+    }
+});
+```
+
+- **Server tests** stub the Nitro globals (`createError` from `h3`, `defineEventHandler = handler => handler`, `readBody`...) inside `vi.hoisted`, mock the boundaries (`~~/server/db/config/connection.js`, Sentry, Firebase Admin, notifications, SSE), then load the module under test with `await import(...)` after the mocks.
+- **DB functions** run real queries on in-memory SQLite: `getKnex` is mocked to return the database from `createTestDatabase()` in `tests/helpers/database.js`, recreated in `beforeEach` and destroyed in `afterEach`. Insert rows with the `insertX(knex, overrides)` helpers and assert on the database state. Update the helper schema with every migration.
+- **API handlers** are called as plain functions with a minimal `buildEvent()` object and mocked DB modules; assert with `rejects.toMatchObject({ statusCode: 400 })`.
+- **Frontend tests** mount with `mountSuspended`, set state through the real stores, mock auto-imports with `mockNuxtImport`, and interact like a user (`setValue`, `trigger('click')`, assert on text and `emitted`).
+- Keep a locale test checking that every locale has the English keys and placeholders, and that every literal `t('...')` key exists.
+- Every bug fix gets a test whose comment describes the bug. Prioritize money, auth, ownership, and input validation paths.
+
+```js
+// Share the in-memory database with the mock factory and stub the Nitro globals, since Vitest hoists vi.mock
+const database = vi.hoisted(async () => {
+    const { createError } = await import('h3');
+    globalThis.createError = createError;
+    return { knex: null };
+});
+
+// Run the queries against an in-memory SQLite database instead of MySQL
+vi.mock('~~/server/db/config/connection.js', async () => {
+    const hoistedDatabase = await database;
+    return { getKnex: () => hoistedDatabase.knex };
+});
+
+// Load the module under test after the mocks
+const { closeDueMarkets } = await import('../../server/db/markets.js');
+```
+
 ## New feature checklist
 
 Work through the layers in this order, skipping those the feature doesn't touch:
@@ -336,7 +417,8 @@ Work through the layers in this order, skipping those the feature doesn't touch:
 7. Migration + `server/db/config/db.sql` if the schema changes.
 8. `server/utils/objectsSchemas.js`: validation.
 9. `i18n/locales/`: keys in every locale.
-10. Check the touched files with editor diagnostics and run the tests.
+10. `tests/`: cover the new behavior (DB functions against SQLite, handlers, components), and update `tests/helpers/database.js` if the schema changed.
+11. Check the touched files with editor diagnostics and run `npm test`.
 
 ## Security non-negotiables
 
