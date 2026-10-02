@@ -123,7 +123,6 @@ Always output these sections, in this order.
 **2. Critical and High findings**, in full format:
 
 ```
----
 **Severity**: Critical | High | Medium | Low | Informational
 **Category**: Technical SEO | Rendering | Structured Data | Performance | Content | GEO
 **Location**: file path, route, or content section
@@ -132,7 +131,6 @@ Always output these sections, in this order.
 **Impact**: how it hurts ranking, indexing, or AI citation
 **Evidence**: the relevant code, rendered HTML, or content snippet
 **Fix**: concrete code change or content rewrite
----
 ```
 
 **3. Medium, Low, and Informational findings**, in the same format but more concise. Group repeated issues into one finding that lists the affected files.
