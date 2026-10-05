@@ -19,6 +19,21 @@ Projects use four main branches:
 | `develop` | Main development line |
 | `feature` | Individual new features |
 
+Changes always flow through the branches in order, one step at a time:
+
+```
+feature → develop → test → main
+```
+
+Never skip a step: for example, `feature` is never merged directly into `test` or `main`, and `develop` is never merged directly into `main`.
+
+When I ask you to **deploy to test** or **deploy to production**, run the whole flow up to that branch, merging and pushing each branch along the way. The request itself is my approval for those merges and pushes:
+
+- **Deploy to test:** push `feature`, merge it into `develop` and push, then merge `develop` into `test` and push.
+- **Deploy to production:** the same, then also merge `test` into `main` and push.
+
+If `feature` has uncommitted changes, ask me before committing them. If a merge has conflicts, stop and tell me.
+
 - Work only on `feature`. Don't change any other branch unless I explicitly ask.
 - Never commit or push without my explicit approval. Ask first every time.
 - Never run destructive git commands (`reset --hard`, `push --force`, rebasing shared branches, deleting branches) without asking.
