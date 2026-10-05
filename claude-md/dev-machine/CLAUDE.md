@@ -31,7 +31,7 @@ Projects use four main branches:
 ## Shared environment
 
 - Don't change global npm or Node versions, system packages, the Cloudflare tunnel configuration, or anything outside your project folder without asking.
-- The production database is read-only: never run migrations or write queries against it. The test (staging) database are fine to use.
+- The production database is read-only: never run migrations or write queries against it. The test (staging) database is fine to use.
 
 ## Dev server
 
