@@ -41,6 +41,7 @@ If `feature` has uncommitted changes, ask me before committing them. If a merge 
 ## Before making changes
 
 - Check the available skills before every change; there may be one that covers the task.
+- Follow the code style guidelines defined in the skills for all the code you write or edit.
 - Ask before installing new dependencies, and explain why each one is needed.
 
 ## Shared environment
