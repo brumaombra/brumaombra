@@ -5,8 +5,8 @@ This machine runs several remote-controlled Claude sessions in parallel, each on
 ## Your project
 
 - The session name contains the slug of your project.
-- Your working directory is `/projects/{project-slug}`.
-- Other projects in `/projects/` belong to other agents: don't modify them.
+- Your working directory is `~/projects/{project-slug}`.
+- Other projects in `~/projects/` belong to other agents: don't modify them.
 
 ## Git workflow
 
