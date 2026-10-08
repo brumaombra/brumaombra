@@ -1,14 +1,14 @@
 ---
 name: nuxt-project-structure
-description: 'Architecture and conventions for full-stack Nuxt 4 apps (srcDir app/): folder layout, Vue script setup order, useState stores, Tailwind 4 theming, pages and SEO, Nitro API handlers, Knex DB layer, Zod validation, Firebase Auth, i18n, SSE, Nitro tasks, Vitest tests, and security rules. Use whenever adding a feature, creating a file, writing tests, or refactoring code in a Nuxt 4 project, including pages, components, stores, API endpoints, DB functions, migrations, tests, or nuxt.config.ts.'
+description: 'Project conventions for full-stack Nuxt apps. Use whenever adding a feature, creating or editing files, writing tests, or refactoring in a Nuxt project: pages, components, stores, API endpoints, DB functions, migrations, or nuxt.config.ts.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
 ---
 
-# Nuxt 4 Project Structure
+# Nuxt Project Structure
 
-Conventions for Nuxt 4 + Nitro apps built on Knex, Zod, and Firebase Auth. For general JavaScript style (formatting, naming, comments, functions, error handling), follow the `javascript-coding-style` skill; this skill covers only what is specific to Nuxt projects.
+Conventions for Nuxt + Nitro apps built on Knex, Zod, and Firebase Auth. For general JavaScript style (formatting, naming, comments, functions, error handling), follow the `javascript-coding-style` skill; this skill covers only what is specific to Nuxt projects.
 
 **Local code wins.** When a file or folder clearly follows an older or more specific pattern, match it. Don't rewrite a slice toward the "ideal" architecture unless asked, and never remove existing comments.
 
@@ -16,7 +16,7 @@ Conventions for Nuxt 4 + Nitro apps built on Knex, Zod, and Firebase Auth. For g
 
 | Layer | Technology |
 |---|---|
-| Framework | Nuxt 4 + Nitro, `srcDir: 'app/'`, `ssr: true` |
+| Framework | Nuxt + Nitro, `srcDir: 'app/'`, `ssr: true` |
 | UI | Vue 3 Composition API, `<script setup>` only |
 | Styling | Tailwind CSS 4 via `@tailwindcss/vite`, CSS variables in `app/assets/css/main.css` |
 | State | `useState` stores (never Pinia or Vuex) |
@@ -26,7 +26,7 @@ Conventions for Nuxt 4 + Nitro apps built on Knex, Zod, and Firebase Auth. For g
 | Icons | Hugeicons (`@hugeicons/core-free-icons`, `@hugeicons/vue`), never FontAwesome |
 | Errors | Sentry via `server/sentry/instrument.js` |
 | i18n | `@nuxtjs/i18n`, one JSON file per locale in `i18n/locales/` |
-| Content | Nuxt Content 3 + MDC components in `app/components/content/` |
+| Content | Nuxt Content + MDC components in `app/components/content/` |
 | Images | `@nuxt/image` |
 | Jobs | Nitro experimental tasks + `scheduledTasks` |
 | Tests | Vitest + `@nuxt/test-utils` (happy-dom), in-memory SQLite via `better-sqlite3` |
@@ -73,7 +73,7 @@ nuxt.config.ts
 vitest.config.js
 ```
 
-Imports: `~/` for app code, `~~/` for `server/` and `shared/` (in Nuxt 4, `~/` points to `app/`). Keep whichever alias the file already uses, and always include the `.js` extension.
+Imports: `~/` for app code, `~~/` for `server/` and `shared/` (`~/` points to `app/`). Keep whichever alias the file already uses, and always include the `.js` extension.
 
 ## nuxt.config.ts
 

@@ -24,6 +24,8 @@ Never print secrets in full (environment values, API keys, passwords, tokens, pr
 
 ## When something is broken
 
+First check whether the same problem is already solved in another project on this server. If it is, replicate that solution instead of inventing a new one, and mention which project you took it from.
+
 Diagnose with read-only checks, tell me the likely cause, the evidence, and the impact, then propose a fix with its rollback plan and wait for my approval. If production is down and you're unsure, don't experiment: report and ask.
 
 ## General rules

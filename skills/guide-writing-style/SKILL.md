@@ -1,6 +1,6 @@
 ---
 name: guide-writing-style
-description: 'Prose style for technical how-to guides, tutorials, and step-by-step walkthroughs. Use when drafting, rewriting, or reviewing guide prose so it reads as warm, practical, technically honest, and plainly explained, with a reason and a verification for each step, calm troubleshooting, and bounded claims. Covers voice and wording only, not frontmatter, SEO, MDC components, or technical correctness.'
+description: 'Writing style for technical how-to guides, tutorials, and step-by-step walkthroughs. Use when drafting, rewriting, or reviewing guide or tutorial prose. For general blog posts, use blog-writing-style instead.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

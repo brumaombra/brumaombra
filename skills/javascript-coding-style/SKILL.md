@@ -1,6 +1,6 @@
 ---
 name: javascript-coding-style
-description: 'Personal JavaScript coding style: formatting, spacing, naming, comments, functions, async and error handling. Use whenever writing, editing, refactoring, or reviewing JavaScript in any project: .js/.mjs/.cjs files, Node scripts, API handlers, utilities, tests, or the script block of a Vue/Svelte/Astro component. Framework-agnostic; apply it alongside any framework-specific skill.'
+description: 'Personal JavaScript and TypeScript coding style. Use whenever writing, editing, refactoring, or reviewing JavaScript or TypeScript code.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
@@ -25,6 +25,7 @@ Code should read top to bottom like a short story: small arrow functions, one st
 - No trailing commas in objects, arrays, parameters, or imports.
 - No hard line-length limit. Keep a statement on one line when it reads well, and break it when it has a structure (objects, chains, long parameter lists).
 - Opening braces on the same line; `} else {` and `} else if (...) {` on the closing-brace line.
+- **Never write `if / else` without braces.** As soon as there is an `else` or `else if`, every branch uses braces, even single-statement ones. A lone `if` with no `else` may go on one line without braces when its body is a single short statement such as a `return`, `continue`, or one function call: `if (!slug) continue;`, `if (user) navTo('/home');`. Loops (`for`, `while`) always use braces.
 - One blank line between logical blocks, and one between top-level declarations. Never two in a row.
 - Strict equality only (`===`, `!==`).
 
@@ -185,7 +186,7 @@ const initialState = () => ({
 });
 ```
 
-- Return early instead of nesting. Short guards fit on one line; guards that throw use braces:
+- Return early instead of nesting. A guard that only returns fits on one line; guards that throw use braces:
 
 ```js
 // Nothing to check
@@ -363,7 +364,7 @@ Comments are what makes this style recognizable. Use them everywhere: in new cod
 - **Every logical block inside a function starts with a `//` comment** after a blank line, again starting with a verb: `// Validate parameters`, `// Get the market ID from the route parameters`, `// Check if user is the creator`, `// Return the created market`. A function reads as a list of these steps.
 - The final `return` in a multi-step function gets its own comment (`// Return the field changes with usernames resolved`).
 - Short setup lines at the very top of a function (for example, `const knex = getKnex();`) and one-line functions don't need block comments.
-- Use **trailing inline comments** for short clarifications of a single line: `setBusy(true); // Busy on`, `if (error.stack) customError.stack = error.stack; // Preserve original stack trace`.
+- Use **trailing inline comments** for short clarifications of a single line: `setBusy(true); // Busy on`, `customError.name = errorMessage; // Set custom title`.
 - Style: sentence case, no trailing period, plain English. Say *what* the block does, and add *why* in parentheses when the reason isn't obvious: `// Count the market against the daily quota (rolled back with the market if anything fails)`.
 - Use `/****** Title ******/` banners to split long functions or files into phases (`Get the data`, `Validations`, `Process resolution`).
 - A one-line header comment on standalone files like migrations: `// Migration to add 'category' column to markets table`.
@@ -408,7 +409,9 @@ export const buildTagsFromPosts = posts => {
 // Rethrow errors instead of reporting them to Sentry
 vi.mock('~~/server/sentry/instrument.js', () => ({
     handleError: ({ error, throwError }) => {
-        if (throwError) throw error;
+        if (throwError) {
+            throw error;
+        }
     }
 }));
 
@@ -446,6 +449,7 @@ describe('deleteUser', () => {
 Before finishing, confirm:
 
 - 4 spaces, semicolons, single quotes, no trailing commas, blank lines between blocks, no final newline.
+- No `if / else` without braces: every branch of an `if / else` chain and every loop has braces. Only a lone `if` with a single short statement may be inline.
 - Only arrow functions, and destructured object parameters with defaults for multi-argument functions.
 - Every function, logical block, `Promise.all` entry, object group, test, and mock has a verb-first `//` comment, including in code you only edited; no JSDoc, no periods.
 - Guard clauses and parameter validation come first; async work is in `try / catch` with the central error handler.

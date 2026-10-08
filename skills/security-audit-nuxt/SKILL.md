@@ -1,6 +1,6 @@
 ---
 name: security-audit-nuxt
-description: 'Security audit for Nuxt 3/4 apps (SSR + Nitro server): runtimeConfig leaks, SSR payload exposure, server routes without auth, v-html/Markdown XSS, routeRules and headers, SSRF via $fetch, open redirects, Firebase token checks, Knex queries, SSE endpoints, and rate limiting. Reports scored findings with severity, exploit path, evidence, and fix. Use when asked to audit, security-review, pentest, harden, or find vulnerabilities in a Nuxt project.'
+description: 'Security audit for Nuxt apps. Use when asked to audit, security-review, pentest, harden, or find vulnerabilities in a Nuxt project.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

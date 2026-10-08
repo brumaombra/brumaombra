@@ -1,6 +1,6 @@
 ---
 name: translate
-description: 'Natural, idiomatic translation and localization between any languages: i18n JSON/locale files, UI strings, Markdown/MDC blog posts with frontmatter, marketing copy, error messages, emails, and legal text. Preserves placeholders, plural syntax, markup, keys, slugs, URLs, and brand terms. Use when asked to translate, localize, or add a new language, when syncing missing keys across locale files, or when creating the translated version of a blog post or page.'
+description: 'Translation and localization between any languages. Use when asked to translate or localize content (locale files, UI strings, blog posts, marketing copy, emails, legal text), add a new language, sync missing keys across locale files, or create the translated version of a page or post.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

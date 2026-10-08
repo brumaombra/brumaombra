@@ -1,6 +1,6 @@
 ---
 name: blog-writing-style
-description: 'Prose style for general blog posts: explainers, opinion pieces, analyses, and practical articles. Use when drafting, rewriting, or reviewing blog prose so it reads as warm, practical, technically honest, and plainly explained, with varied rhythm and calibrated claims. Covers voice and wording only, not frontmatter, SEO, components, or fact-checking.'
+description: 'Writing style for general blog posts: explainers, opinion pieces, analyses, and practical articles. Use when drafting, rewriting, or reviewing blog post prose. For technical how-to guides and tutorials, use guide-writing-style instead.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
