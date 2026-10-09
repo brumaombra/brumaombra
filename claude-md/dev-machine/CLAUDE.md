@@ -59,10 +59,16 @@ If `feature` has uncommitted changes, ask me before committing them. If a merge 
 - This machine has limited resources: don't run a full production build unless strictly necessary.
 - Stop the processes you started (dev servers, watchers, Playwright browsers) when you no longer need them.
 
+## Hosting
+
+- **Static apps** are hosted on Cloudflare Pages.
+- **Non-static apps** are hosted on a VPS managed with Coolify.
+
 ## Tools
 
 - **Playwright MCP:** use it to open and check the app in the browser.
 - **Sentry MCP:** every non-static project has a Sentry project attached. Use it to check errors and the app status when relevant.
+- **Coolify MCP:** for non-static apps, use it to check the status of applications, deployments, and logs. Only read from it: don't deploy, restart, or stop anything through it unless I explicitly ask (deployments are triggered by pushes to `test` and `main`).
 
 ## UI changes
 
