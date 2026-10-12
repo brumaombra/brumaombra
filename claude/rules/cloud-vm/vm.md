@@ -20,10 +20,9 @@ Check whether this project is static or not to know where it's deployed, and use
 
 ## Tools
 
-- **Browser:** if a browser tool (such as Playwright MCP) is available, use it to open and check the app.
-- **Sentry MCP:** every non-static project has a Sentry project attached. Use it to check errors and the app status when relevant.
-- **Coolify MCP:** for non-static apps, use it to check the status of applications, deployments, and logs. Only read from it: don't deploy, restart, or stop anything through it unless I explicitly ask (deployments are triggered by pushes to `test` and `main`).
-- **Cloudflare MCP:** use it to purge the domain's cache after each deploy. Don't change any other Cloudflare setting unless I explicitly ask.
+- **Sentry MCP:** every non-static project has a Sentry project attached. Use it to check errors when relevant.
+- **Coolify MCP:** for non-static apps, use it to check the status of applications, deployments, and logs.
+- **Cloudflare MCP:** use it to manage the project's Cloudflare functionalities. Ask before changing any configuration.
 
 ## The Claude Cloud VM
 
