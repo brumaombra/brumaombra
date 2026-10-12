@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 # --------- Configuration ---------
 
@@ -43,6 +43,7 @@ if [ "$MYSQL" = true ]; then
     mysql <<SQL
 CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\`;
 CREATE USER IF NOT EXISTS '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';
+ALTER USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';
 GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'localhost';
 SQL
 fi
