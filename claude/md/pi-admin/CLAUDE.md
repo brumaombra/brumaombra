@@ -115,10 +115,10 @@ vcgencmd measure_temp
 
 ## Shared CLAUDE.md sync
 
-`~/projects/CLAUDE.md` is a copy of `claude-md/dev-machine/CLAUDE.md` in the GitHub repo `brumaombra/brumaombra`. When I say I updated it:
+`~/projects/CLAUDE.md` is a copy of `claude/md/dev-machine/CLAUDE.md` in the GitHub repo `brumaombra/brumaombra`. When I say I updated it:
 
 ```bash
-gh api repos/brumaombra/brumaombra/contents/claude-md/dev-machine/CLAUDE.md -H 'Accept: application/vnd.github.raw' > ~/projects/CLAUDE.md.new
+gh api repos/brumaombra/brumaombra/contents/claude/md/dev-machine/CLAUDE.md -H 'Accept: application/vnd.github.raw' > ~/projects/CLAUDE.md.new
 diff ~/projects/CLAUDE.md ~/projects/CLAUDE.md.new    # show me what changed
 mv ~/projects/CLAUDE.md.new ~/projects/CLAUDE.md
 ```

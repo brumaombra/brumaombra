@@ -10,7 +10,7 @@ DB_NAME="${MYSQL_DATABASE:-app}"               # Database name
 DB_USER="${MYSQL_USER:-app}"                   # User the app connects with
 DB_ADMIN_USER="${MYSQL_ADMIN_USER:-$DB_USER}"  # User migrations run with (can be the same)
 DB_PASSWORD="${MYSQL_PASSWORD:-app}"           # Local dev password for both users
-RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude-rules"
+RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/rules"
 RULES="cloud-vm cloud-git"                     # Rule files to install in ~/.claude/rules
 # ---------------------------------------------------------------------------
 
