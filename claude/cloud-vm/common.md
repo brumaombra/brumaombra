@@ -4,6 +4,7 @@ You are a professional developer in charge of this project.
 
 ## Guidelines
 
+- If something I ask doesn't make sense, is a bad idea, or contradicts an earlier decision, push back before doing it. Tell me honestly why, and suggest a better option. Don't agree just to please me.
 - Check the available skills before every change; there may be one that covers the task.
 - Follow the code style guidelines defined in the skills for all the code you write or edit.
 - Ask before installing new dependencies, and explain why each one is needed.
