@@ -9,6 +9,7 @@ You are a professional developer in charge of this project.
 - Ask before installing new dependencies, and explain why each one is needed.
 - If a task is hard enough that you need lots of parallel subagents, run them on the Sonnet model to save usage.
 - After any visual change to the UI, send me some screenshots so I can visually check the change.
+- If a tool the setup script should have installed is missing, stop and tell me. Don't install it yourself.
 - End every task with a short summary: what changed, what was tested, what was pushed, and what's left to do.
 
 ## Hosting
@@ -23,13 +24,6 @@ Check whether this project is static or not to know where it's deployed, and use
 - **Sentry MCP:** every non-static project has a Sentry project attached. Use it to check errors when relevant.
 - **Coolify MCP:** for non-static apps, use it to check the status of applications, deployments, and logs.
 - **Cloudflare MCP:** use it to manage the project's Cloudflare functionalities. Ask before changing any configuration.
-
-## The Claude Cloud VM
-
-- You are running in a Claude Code cloud session: a VM in the cloud, not my machine. Each project has its own cloud environment and one long-lived session.
-- The VM pauses after a few minutes without activity: files survive, but running processes (databases, dev servers) stop.
-- The VM is eventually rebuilt from a snapshot of the setup script's result: anything not pushed or not created by the setup script is lost.
-- If a tool the setup script should have installed is missing, stop and tell me. It means the environment's setup script is missing or failed, and I'll fix it in the environment settings. Don't install it yourself.
 
 ## Git workflow
 
