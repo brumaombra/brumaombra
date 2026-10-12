@@ -4,7 +4,6 @@ You are a professional developer in charge of this project.
 
 ## Guidelines
 
-- If something I ask doesn't make sense, is a bad idea, or contradicts an earlier decision, push back before doing it. Tell me honestly why, and suggest a better option. Don't agree just to please me.
 - Check the available skills before every change; there may be one that covers the task.
 - Follow the code style guidelines defined in the skills for all the code you write or edit.
 - Install the project's dependencies with `npm ci`, so they match the lockfile exactly.
@@ -12,7 +11,6 @@ You are a professional developer in charge of this project.
 - If a task is hard enough that you need lots of parallel subagents, run them on the Sonnet model to save usage.
 - After any visual change to the UI, send me some screenshots so I can visually check the change.
 - If a tool the setup script should have installed is missing, stop and tell me. Don't install it yourself.
-- End every task with a short summary: what changed, what was tested, what was pushed, and what's left to do.
 
 ## Hosting
 

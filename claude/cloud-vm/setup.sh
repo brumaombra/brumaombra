@@ -6,7 +6,7 @@ set -eo pipefail
 NODE_VERSION=24.21.0 # Exact Node version the project needs
 MYSQL=true # Whether to install MySQL and its rules (needs the MYSQL_* environment variables)
 RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # URL to download the rules from
-RULES_LIST="common" # List of rules to download (space-separated, without the .md extension)
+RULES_LIST="common personality" # List of rules to download (space-separated, without the .md extension)
 
 # --------- Setup ---------
 
