@@ -4,7 +4,8 @@ set -eo pipefail
 # --------- Configuration ---------
 
 NODE_VERSION=24.21.0 # Exact Node version the project needs
-MYSQL=true # Whether to install MySQL and its rules (needs the MYSQL_* environment variables)
+MYSQL=false # Whether to install MySQL and its rules (needs the MYSQL_* environment variables)
+R2=false # Whether to add the Cloudflare R2 upload rules (needs the R2 network secret)
 RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # URL to download the rules from
 RULES_LIST="common personality" # List of rules to download (space-separated, without the .md extension)
 
@@ -46,6 +47,11 @@ CREATE USER IF NOT EXISTS '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWO
 ALTER USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';
 GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'localhost';
 SQL
+fi
+
+# Cloudflare R2: add the upload rules
+if [ "$R2" = true ]; then
+    RULES_LIST="$RULES_LIST r2"
 fi
 
 # Claude rules for cloud sessions (a failed download doesn't block the session)
