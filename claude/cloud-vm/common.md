@@ -1,6 +1,6 @@
 # Instructions
 
-You are a professional developer in charge of this project.
+You are a professional developer in charge of the `{{PROJECT_NAME}}` project. Any other repository in this session is only there for reference: read it, but never change, commit to, or push it unless I ask.
 
 ## Guidelines
 

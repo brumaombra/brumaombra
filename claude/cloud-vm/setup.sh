@@ -3,6 +3,7 @@ set -eo pipefail
 
 # --------- Configuration ---------
 
+PROJECT_NAME="" # Name of the project's repository (the main project of the sessions)
 NODE_VERSION=24.21.0 # Exact Node version the project needs
 WEB=true # Whether the project has a web UI (adds the web rules)
 MYSQL=false # Whether to install MySQL and its rules (needs the MYSQL_* environment variables)
@@ -11,6 +12,12 @@ RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/c
 RULES_LIST="common personality" # List of rules to download (space-separated, without the .md extension)
 
 # --------- Setup ---------
+
+# Stop if the project name is missing
+if [ -z "$PROJECT_NAME" ]; then
+    echo "Missing PROJECT_NAME in the setup script configuration" >&2
+    exit 1
+fi
 
 # Node: install NODE_VERSION and put it ahead of the preinstalled Node 22
 NODE_DIR="/opt/node-v$NODE_VERSION"
@@ -65,3 +72,8 @@ mkdir -p /root/.claude/rules
 for rule in $RULES_LIST; do
     curl -fsSL "$RULES_URL/$rule.md" -o "/root/.claude/rules/$rule.md" || echo "Could not download the $rule rules"
 done
+
+# Put the project name in the common rules
+if [ -f /root/.claude/rules/common.md ]; then
+    sed -i "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" /root/.claude/rules/common.md
+fi
