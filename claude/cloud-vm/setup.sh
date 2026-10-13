@@ -4,6 +4,7 @@ set -eo pipefail
 # --------- Configuration ---------
 
 NODE_VERSION=24.21.0 # Exact Node version the project needs
+WEB=true # Whether the project has a web UI (adds the web rules)
 MYSQL=false # Whether to install MySQL and its rules (needs the MYSQL_* environment variables)
 R2=false # Whether to add the Cloudflare R2 upload rules (needs the R2 network secret)
 RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # URL to download the rules from
@@ -21,6 +22,11 @@ mkdir -p /root/.local/bin
 for bin in node npm npx corepack; do
     ln -sf "$NODE_DIR/bin/$bin" "/root/.local/bin/$bin"
 done
+
+# Web UI: add the web rules
+if [ "$WEB" = true ]; then
+    RULES_LIST="$RULES_LIST web"
+fi
 
 # MySQL: install, start, and create the dev database and user
 if [ "$MYSQL" = true ]; then

@@ -8,8 +8,8 @@ You are a professional developer in charge of this project.
 - Follow the code style guidelines defined in the skills for all the code you write or edit.
 - Install the project's dependencies with `npm ci`, so they match the lockfile exactly.
 - Ask before installing new dependencies, and explain why each one is needed.
+- After each change to the app's functionality, double-check it before calling it done: review your diff, then run the changed feature and, if the project has them, its tests to confirm it works and didn't break anything nearby.
 - If a task is hard enough that you need lots of parallel subagents, run them on the Sonnet model to save usage.
-- After any visual change to the UI, send me some screenshots so I can visually check the change.
 - If a tool the setup script should have installed is missing, stop and tell me. Don't install it yourself.
 
 ## Hosting
@@ -50,7 +50,5 @@ When I ask you to **deploy to test** or **deploy to production**, run the whole 
 
 - **Deploy to test:** push `feature`, merge it into `develop` and push, then merge `develop` into `test` and push.
 - **Deploy to production:** the same, then merge `test` into `main` and push. Only push `main` after the test deployment has finished, so two deployments don't run at the same time.
-
-If the project is an app or website with a UI, purge the Cloudflare cache for its domain after each deploy (test and production), once the deployment has finished.
 
 If a merge has conflicts, stop and tell me.
