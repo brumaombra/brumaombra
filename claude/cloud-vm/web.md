@@ -3,8 +3,8 @@
 The project is an app or website with a web UI.
 
 - For any visual change to the UI, send me screenshots of the app before and after the change, on both desktop and mobile. Take the "before" ones before you start editing.
-- After each deploy (test and production), once the deployment has finished, purge the Cloudflare cache for the project's domain.
-- After each deploy and cache purge (test and production), do a quick check of the deployed website: open the home page and the pages affected by the change, and confirm they load, show the new version, and have no console errors. In production, only look around: don't submit forms or create data. If something is broken, tell me right away.
+- After each deploy, once the deployment has finished, purge the Cloudflare cache for the project's domain.
+- After each deploy and cache purge, in every environment, do a quick check of the deployed website: open the home page and the pages affected by the change, and confirm they load, show the new version, and have no console errors. In production, only look around: don't submit forms or create data. If something is broken, tell me right away.
 
 ## Lighthouse
 

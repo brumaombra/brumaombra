@@ -5,6 +5,7 @@ set -eo pipefail
 
 PROJECT_NAME="" # Name of the project's repository (the main project of the sessions)
 NODE_VERSION=24.21.0 # Exact Node version the project needs
+DEPLOY=true # Whether the project is a deployed app (adds the deploy rules)
 WEB=true # Whether the project has a web UI (adds the web rules)
 MYSQL=false # Whether to install MySQL and its rules (needs the MYSQL_* environment variables)
 R2=false # Whether to add the Cloudflare R2 upload rules (needs the R2 network secret)
@@ -29,6 +30,11 @@ mkdir -p /root/.local/bin
 for bin in node npm npx corepack; do
     ln -sf "$NODE_DIR/bin/$bin" "/root/.local/bin/$bin"
 done
+
+# Deployment: add the deploy rules
+if [ "$DEPLOY" = true ]; then
+    RULES_LIST="$RULES_LIST deploy"
+fi
 
 # Web UI: add the web rules
 if [ "$WEB" = true ]; then
