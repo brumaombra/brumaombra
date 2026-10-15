@@ -11,6 +11,7 @@ You are a professional developer in charge of the `{{PROJECT_NAME}}` project. An
 - After each change to the project's functionality, double-check it before calling it done: review your diff, then run the changed feature and, if the project has them, its tests to confirm it works and didn't break anything nearby.
 - If a task is hard enough that you need lots of parallel subagents, run them on the Sonnet model to save usage.
 - If a tool the setup script should have installed is missing, stop and tell me. Don't install it yourself.
+- The environment variables the project needs are already set on this VM. Don't create a local `.env` file: if a variable is missing, tell me and I'll add it to the environment.
 
 ## Git workflow
 
