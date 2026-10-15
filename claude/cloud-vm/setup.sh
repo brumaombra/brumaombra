@@ -7,7 +7,7 @@ PROJECT_NAME="" # Name of the project's repository (the main project of the sess
 NODE_VERSION=24.21.0 # Exact Node version the project needs
 DEPLOY=true # Whether the project is a deployed app (adds the deploy rules)
 WEB=true # Whether the project has a web UI (adds the web rules)
-MYSQL=false # Whether to install MySQL and its rules (needs the MYSQL_* and MYSQL_ADMIN_* environment variables)
+MYSQL=false # Whether to install MySQL and its rules (the database is created at session start from the MYSQL_* variables)
 R2=false # Whether to add the Cloudflare R2 upload rules (needs the R2 network secret)
 RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # URL to download the rules from
 RULES_LIST="common personality" # List of rules to download (space-separated, without the .md extension)
@@ -41,36 +41,16 @@ if [ "$WEB" = true ]; then
     RULES_LIST="$RULES_LIST web"
 fi
 
-# MySQL: install, start, and create the dev database and user
+# MySQL: install it and add its rules
 if [ "$MYSQL" = true ]; then
-    # Stop if any MySQL environment variable is missing
-    for var in MYSQL_IP MYSQL_PORT MYSQL_DATABASE MYSQL_USER MYSQL_PASSWORD MYSQL_ADMIN_USER MYSQL_ADMIN_PASSWORD; do
-        if [ -z "${!var}" ]; then
-            echo "Missing MySQL environment variable: $var" >&2
-            exit 1
-        fi
-    done
-
     # Add MySQL rules to the list of rules to download
     RULES_LIST="$RULES_LIST mysql"
 
-    # Install MySQL if not already installed, and start the service
+    # Install MySQL if not already installed (the database and users are created at session start)
     if ! command -v mysqld >/dev/null 2>&1; then
         apt-get update
         DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server
     fi
-    mysqladmin ping >/dev/null 2>&1 || service mysql start
-
-    # Create the DB, the app user (data only) and the admin user (migrations, schema changes)
-    mysql <<SQL
-CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\`;
-CREATE USER IF NOT EXISTS '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';
-ALTER USER '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';
-GRANT SELECT, INSERT, UPDATE, DELETE ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_USER'@'localhost';
-CREATE USER IF NOT EXISTS '$MYSQL_ADMIN_USER'@'localhost' IDENTIFIED BY '$MYSQL_ADMIN_PASSWORD';
-ALTER USER '$MYSQL_ADMIN_USER'@'localhost' IDENTIFIED BY '$MYSQL_ADMIN_PASSWORD';
-GRANT ALL ON \`$MYSQL_DATABASE\`.* TO '$MYSQL_ADMIN_USER'@'localhost';
-SQL
 fi
 
 # Cloudflare R2: add the upload rules
