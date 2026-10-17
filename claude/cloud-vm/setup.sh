@@ -58,13 +58,18 @@ if [ "$R2" = true ]; then
     RULES_LIST="$RULES_LIST r2"
 fi
 
-# Claude rules for cloud sessions (a failed download doesn't block the session)
-mkdir -p /root/.claude/rules
+# Claude rules for cloud sessions, replaced on every run (a failed download doesn't block the session)
+RULES_DIR="/root/.claude/rules"
+rm -rf "$RULES_DIR"
+mkdir -p "$RULES_DIR"
 for rule in $RULES_LIST; do
-    curl -fsSL "$RULES_URL/$rule.md" -o "/root/.claude/rules/$rule.md" || echo "Could not download the $rule rules"
+    if ! curl -fsSL "$RULES_URL/$rule.md" -o "$RULES_DIR/$rule.md"; then
+        rm -f "$RULES_DIR/$rule.md"
+        echo "Could not download the $rule rules"
+    fi
 done
 
 # Put the project name in the common rules
-if [ -f /root/.claude/rules/common.md ]; then
-    sed -i "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" /root/.claude/rules/common.md
+if [ -f "$RULES_DIR/common.md" ]; then
+    sed -i "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" "$RULES_DIR/common.md"
 fi
