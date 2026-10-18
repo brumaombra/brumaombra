@@ -18,7 +18,7 @@ Code should read top to bottom like a short story: small arrow functions, one st
 
 ## Formatting
 
-- 4-space indentation, no tabs, no trailing whitespace.
+- Tab indentation, never spaces, no trailing whitespace.
 - No newline at the end of the file: the last line of code (usually `};` or `});`) is the final character.
 - Always use semicolons.
 - Single quotes for strings; template literals for interpolation and multi-line strings (SQL, SSE payloads). Don't concatenate with `+`.
@@ -32,23 +32,23 @@ Code should read top to bottom like a short story: small arrow functions, one st
 ```js
 // Format a percentage
 export const formatPercentage = ({ value, decimals = 2, includeSign = true, locale }) => {
-    // Check for NaN
-    if (value === null || value === undefined || isNaN(value)) {
-        value = 0;
-    }
+	// Check for NaN
+	if (value === null || value === undefined || isNaN(value)) {
+		value = 0;
+	}
 
-    // Format the number based on the current locale
-    const formattedNumber = new Intl.NumberFormat(locale, {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals
-    }).format(value * 100);
+	// Format the number based on the current locale
+	const formattedNumber = new Intl.NumberFormat(locale, {
+		minimumFractionDigits: decimals,
+		maximumFractionDigits: decimals
+	}).format(value * 100);
 
-    // Return the formatted percentage string
-    if (includeSign) {
-        return `${formattedNumber}%`;
-    } else {
-        return formattedNumber;
-    }
+	// Return the formatted percentage string
+	if (includeSign) {
+		return `${formattedNumber}%`;
+	} else {
+		return formattedNumber;
+	}
 };
 ```
 
@@ -62,8 +62,8 @@ export const formatPercentage = ({ value, decimals = 2, includeSign = true, loca
 ```js
 // Category metadata list
 const categories = [
-    { value: 'general', label: t('categories.general'), icon: Globe02Icon },
-    { value: 'sports', label: t('categories.sports'), icon: FootballIcon }
+	{ value: 'general', label: t('categories.general'), icon: Globe02Icon },
+	{ value: 'sports', label: t('categories.sports'), icon: FootballIcon }
 ];
 ```
 
@@ -72,11 +72,11 @@ const categories = [
 ```js
 // Return the FAQs
 return [{
-    question: t('faq.closeTime.question'),
-    answer: t('faq.closeTime.answer', { closeTime })
+	question: t('faq.closeTime.question'),
+	answer: t('faq.closeTime.answer', { closeTime })
 }, {
-    question: t('faq.status.question'),
-    answer: t('faq.status.answer', { status })
+	question: t('faq.status.question'),
+	answer: t('faq.status.answer', { status })
 }];
 ```
 
@@ -85,17 +85,17 @@ return [{
 ```js
 // Base metatags
 const metatags = {
-    // Title and description
-    title,
-    description,
+	// Title and description
+	title,
+	description,
 
-    // Open graph
-    ogType: 'website',
-    ogTitle: title,
+	// Open graph
+	ogType: 'website',
+	ogTitle: title,
 
-    // Twitter cards
-    twitterCard: 'summary_large_image',
-    twitterTitle: title
+	// Twitter cards
+	twitterCard: 'summary_large_image',
+	twitterTitle: title
 };
 ```
 
@@ -108,8 +108,8 @@ Break builder and query chains one call per line, indented one level:
 ```js
 // Fetch usernames for the invited user IDs
 const users = await knex('users')
-    .whereIn('id', uniqueInvitedUserIds)
-    .select('id', 'username');
+	.whereIn('id', uniqueInvitedUserIds)
+	.select('id', 'username');
 ```
 
 ## Modules
@@ -126,7 +126,7 @@ const users = await knex('users')
 
 // Format LMSR numbers for display
 const formatLmsrNumber = (number, precision = 4) => {
-    return parseFloat(number.toFixed(precision));
+	return parseFloat(number.toFixed(precision));
 };
 ```
 
@@ -155,21 +155,21 @@ const formatLmsrNumber = (number, precision = 4) => {
 ```js
 // Format a decimal number
 export const formatDecimal = ({ value, decimals = 2, locale }) => {
-    // Check for NaN
-    if (value === null || value === undefined || isNaN(value)) {
-        value = 0;
-    }
+	// Check for NaN
+	if (value === null || value === undefined || isNaN(value)) {
+		value = 0;
+	}
 
-    // Format the number based on the current locale
-    return new Intl.NumberFormat(locale, {
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals
-    }).format(value);
+	// Format the number based on the current locale
+	return new Intl.NumberFormat(locale, {
+		minimumFractionDigits: decimals,
+		maximumFractionDigits: decimals
+	}).format(value);
 };
 
 // Format an integer number
 export const formatInteger = ({ value, locale }) => {
-    return formatDecimal({ value, decimals: 0, locale });
+	return formatDecimal({ value, decimals: 0, locale });
 };
 ```
 
@@ -180,9 +180,9 @@ export const formatInteger = ({ value, locale }) => {
 ```js
 // Initial state object
 const initialState = () => ({
-    page: 1,
-    hasMore: false,
-    list: []
+	page: 1,
+	hasMore: false,
+	list: []
 });
 ```
 
@@ -194,11 +194,11 @@ if (!invitedUserIds?.length) return;
 
 // Check if market exists
 if (!market) {
-    throw createError({
-        statusCode: 404,
-        statusMessage: 'market_not_found',
-        message: t(lang, 'server.error.marketNotFound')
-    });
+	throw createError({
+		statusCode: 404,
+		statusMessage: 'market_not_found',
+		message: t(lang, 'server.error.marketNotFound')
+	});
 }
 ```
 
@@ -215,8 +215,8 @@ const balanceUpdates = [];
 
 // Return the net invested amount to each user
 for (const [userId, netInvested] of netInvestedMap.entries()) {
-    if (netInvested <= 0) continue;
-    balanceUpdates.push({ userId, amount: netInvested });
+	if (netInvested <= 0) continue;
+	balanceUpdates.push({ userId, amount: netInvested });
 }
 
 // Get unique invited user IDs
@@ -230,8 +230,8 @@ const usernamesById = new Map(users.map(user => [user.id, user.username]));
 ```js
 // Status mapping object
 const statusMap = {
-    open: 'marketStatus.open',
-    closed: 'marketStatus.closed'
+	open: 'marketStatus.open',
+	closed: 'marketStatus.closed'
 };
 
 // Get the translation key, fallback to the status itself if not found
@@ -243,11 +243,11 @@ const translationKey = statusMap[status] || status;
 ```js
 // Determine the appropriate format
 if (diffSeconds < 60) {
-    return t('common.timeAgo.justNow');
+	return t('common.timeAgo.justNow');
 } else if (diffMinutes < 60) {
-    return t('common.timeAgo.minutesAgo', { count: diffMinutes });
+	return t('common.timeAgo.minutesAgo', { count: diffMinutes });
 } else {
-    return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(parsedDate);
+	return new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(parsedDate);
 }
 ```
 
@@ -258,7 +258,7 @@ if (diffSeconds < 60) {
 ```js
 // Keep connection alive
 const keepAlive = setInterval(() => {
-    res.write(': keep-alive\n\n'); // Send a comment as a keep-alive ping
+	res.write(': keep-alive\n\n'); // Send a comment as a keep-alive ping
 }, 10000); // 10 seconds
 ```
 
@@ -270,11 +270,11 @@ const keepAlive = setInterval(() => {
 ```js
 // Execute the queries in parallel
 const [market, positions] = await Promise.all([
-    // Get and lock the market
-    trx('markets').where({ id: marketId }).first().forUpdate(),
+	// Get and lock the market
+	trx('markets').where({ id: marketId }).first().forUpdate(),
 
-    // Get every position in this market
-    trx('positions').where({ marketId })
+	// Get every position in this market
+	trx('positions').where({ marketId })
 ]);
 ```
 
@@ -297,8 +297,8 @@ return { ...response.market, positions };
 ```js
 // Handle connection close
 const cleanup = () => {
-    clearInterval(keepAlive);
-    removeConnection({ marketId, connection });
+	clearInterval(keepAlive);
+	removeConnection({ marketId, connection });
 };
 
 // Listen for client disconnect
@@ -317,21 +317,21 @@ broadcastMarketUpdate({ marketId });
 ```js
 // Delete a market
 export const deleteMarket = async ({ marketId, userId }) => {
-    const knex = getKnex();
+	const knex = getKnex();
 
-    try {
-        // Validate parameters
-        if (!marketId || !userId) {
-            throw new Error('Market ID and user ID are required');
-        }
+	try {
+		// Validate parameters
+		if (!marketId || !userId) {
+			throw new Error('Market ID and user ID are required');
+		}
 
-        // Delete the market owned by the user
-        await knex('markets')
-            .where({ id: marketId, userId })
-            .delete();
-    } catch (error) {
-        handleError({ error, errorMessage: 'Error deleting market', throwError: true });
-    }
+		// Delete the market owned by the user
+		await knex('markets')
+			.where({ id: marketId, userId })
+			.delete();
+	} catch (error) {
+		handleError({ error, errorMessage: 'Error deleting market', throwError: true });
+	}
 };
 ```
 
@@ -342,15 +342,15 @@ export const deleteMarket = async ({ marketId, userId }) => {
 ```js
 // Handle Google login
 const handleGoogleLoginPress = async () => {
-    try {
-        setBusy(true); // Busy on
-        const user = await googleLogin({ t, locale: locale.value }); // Login with Google
-        if (user) navTo('/private/markets'); // Redirect after login
-    } catch (error) {
-        showMessageToast({ message: error.message || t('auth.login.googleLoginError'), type: 'error' });
-    } finally {
-        setBusy(false); // Busy off
-    }
+	try {
+		setBusy(true); // Busy on
+		const user = await googleLogin({ t, locale: locale.value }); // Login with Google
+		if (user) navTo('/private/markets'); // Redirect after login
+	} catch (error) {
+		showMessageToast({ message: error.message || t('auth.login.googleLoginError'), type: 'error' });
+	} finally {
+		setBusy(false); // Busy off
+	}
 };
 ```
 
@@ -375,25 +375,25 @@ A complete function with every comment type in place:
 ```js
 // Build unique tag cards from blog posts
 export const buildTagsFromPosts = posts => {
-    const tagsList = posts.flatMap(post => post.tags || []);
-    const tagsBySlug = new Map();
+	const tagsList = posts.flatMap(post => post.tags || []);
+	const tagsBySlug = new Map();
 
-    // Loop through each tag and count it under its slug
-    for (const tag of tagsList) {
-        const slug = slugify(tag);
-        if (!slug) continue; // Skip tags without a valid slug
+	// Loop through each tag and count it under its slug
+	for (const tag of tagsList) {
+		const slug = slugify(tag);
+		if (!slug) continue; // Skip tags without a valid slug
 
-        // Initialize the tag card the first time the slug appears
-        if (!tagsBySlug.has(slug)) {
-            tagsBySlug.set(slug, { name: tag, slug, count: 0 });
-        }
+		// Initialize the tag card the first time the slug appears
+		if (!tagsBySlug.has(slug)) {
+			tagsBySlug.set(slug, { name: tag, slug, count: 0 });
+		}
 
-        // Increment the count for this tag slug
-        tagsBySlug.get(slug).count += 1;
-    }
+		// Increment the count for this tag slug
+		tagsBySlug.get(slug).count += 1;
+	}
 
-    // Return the unique tag cards (in order of first appearance)
-    return [...tagsBySlug.values()];
+	// Return the unique tag cards (in order of first appearance)
+	return [...tagsBySlug.values()];
 };
 ```
 
@@ -408,39 +408,39 @@ export const buildTagsFromPosts = posts => {
 ```js
 // Rethrow errors instead of reporting them to Sentry
 vi.mock('~~/server/sentry/instrument.js', () => ({
-    handleError: ({ error, throwError }) => {
-        if (throwError) {
-            throw error;
-        }
-    }
+	handleError: ({ error, throwError }) => {
+		if (throwError) {
+			throw error;
+		}
+	}
 }));
 
 // Account deletion: the user's data goes away, other users' funds stay
 describe('deleteUser', () => {
-    let knex;
+	let knex;
 
-    // Create a fresh database for each test
-    beforeEach(async () => {
-        knex = await createTestDatabase();
-    });
+	// Create a fresh database for each test
+	beforeEach(async () => {
+		knex = await createTestDatabase();
+	});
 
-    // Close the in-memory database
-    afterEach(async () => {
-        await knex.destroy();
-    });
+	// Close the in-memory database
+	afterEach(async () => {
+		await knex.destroy();
+	});
 
-    // Deleting a user used to wipe the other traders' positions without a refund
-    it('refunds the other traders of the user\'s open markets', async () => {
-        // Create a market owned by the user and a trade by another user
-        const market = await insertMarket(knex, { userId: deletedUser.id });
-        await executeTrade({ userId: otherUser.id, marketId: market.id, tradeData: { option: 'yes', amount: 50 } });
+	// Deleting a user used to wipe the other traders' positions without a refund
+	it('refunds the other traders of the user\'s open markets', async () => {
+		// Create a market owned by the user and a trade by another user
+		const market = await insertMarket(knex, { userId: deletedUser.id });
+		await executeTrade({ userId: otherUser.id, marketId: market.id, tradeData: { option: 'yes', amount: 50 } });
 
-        // Delete the account
-        await deleteUser({ userId: deletedUser.id });
+		// Delete the account
+		await deleteUser({ userId: deletedUser.id });
 
-        // Expect the other user to be refunded
-        expect((await knex('users').where({ id: otherUser.id }).first()).balance).toBeCloseTo(1000, 4);
-    });
+		// Expect the other user to be refunded
+		expect((await knex('users').where({ id: otherUser.id }).first()).balance).toBeCloseTo(1000, 4);
+	});
 });
 ```
 
@@ -448,7 +448,7 @@ describe('deleteUser', () => {
 
 Before finishing, confirm:
 
-- 4 spaces, semicolons, single quotes, no trailing commas, blank lines between blocks, no final newline.
+- Tabs, semicolons, single quotes, no trailing commas, blank lines between blocks, no final newline.
 - No `if / else` without braces: every branch of an `if / else` chain and every loop has braces. Only a lone `if` with a single short statement may be inline.
 - Only arrow functions, and destructured object parameters with defaults for multi-argument functions.
 - Every function, logical block, `Promise.all` entry, object group, test, and mock has a verb-first `//` comment, including in code you only edited; no JSDoc, no periods.

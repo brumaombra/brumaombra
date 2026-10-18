@@ -118,7 +118,7 @@ const hasResults = computed(() => store.value.list.length > 0);
 
 // 8. Methods
 const fetchData = async () => {
-    // ...
+	// ...
 };
 
 // 9. Lifecycle hooks
@@ -133,9 +133,9 @@ Every store is a `useXStore.js` file in `app/composables/stores/`:
 ```js
 // Initial state object (a factory, so every reset and SSR request gets a fresh copy)
 const initialState = () => ({
-    page: 1,
-    hasMore: false,
-    list: []
+	page: 1,
+	hasMore: false,
+	list: []
 });
 
 // Main store function
@@ -143,8 +143,8 @@ export const useMarketsSearchStore = () => useState('marketsSearch', initialStat
 
 // Reset function to clear the store
 export const resetMarketsSearchStore = () => {
-    const store = useMarketsSearchStore();
-    store.value = initialState();
+	const store = useMarketsSearchStore();
+	store.value = initialState();
 };
 ```
 
@@ -177,15 +177,15 @@ Each page declares its layout, middleware, SEO, and schema:
 ```js
 // Define page metadata
 definePageMeta({
-    layout: 'private', // Use a layout that exists in app/layouts/
-    middleware: 'auth' // Required for protected routes
+	layout: 'private', // Use a layout that exists in app/layouts/
+	middleware: 'auth' // Required for protected routes
 });
 
 // Define SEO metadata
 useSeoMeta(createSEOMetatags({
-    title: t('seo.markets.title'),
-    description: t('seo.markets.description'),
-    url: route.path
+	title: t('seo.markets.title'),
+	description: t('seo.markets.description'),
+	url: route.path
 }));
 ```
 
@@ -210,30 +210,30 @@ import { handleNuxtErrorMessages } from '~~/server/sentry/instrument.js';
 import { t } from '~~/server/utils/i18n.js';
 
 export default defineEventHandler(async event => {
-    let lang = 'en';
+	let lang = 'en';
 
-    try {
-        // Verify user is authenticated
-        const user = await getCurrentUser(event);
-        if (!user) {
-            throw createError({
-                statusCode: 401,
-                statusMessage: 'unauthorized',
-                message: t(lang, 'server.error.unauthorized')
-            });
-        }
+	try {
+		// Verify user is authenticated
+		const user = await getCurrentUser(event);
+		if (!user) {
+			throw createError({
+				statusCode: 401,
+				statusMessage: 'unauthorized',
+				message: t(lang, 'server.error.unauthorized')
+			});
+		}
 
-        // Get the language from the user profile
-        lang = user.language || lang;
+		// Get the language from the user profile
+		lang = user.language || lang;
 
-        // Get the market ID from the route parameters
-        const marketId = getRouterParam(event, 'id');
+		// Get the market ID from the route parameters
+		const marketId = getRouterParam(event, 'id');
 
-        // Cancel the market (ownership is checked in the DB layer)
-        return await cancelMarket({ marketId, userId: user.id, lang });
-    } catch (error) {
-        handleNuxtErrorMessages({ error, errorTranslated: t(lang, 'server.error.cancelingMarket'), errorMessage: 'Error canceling market' });
-    }
+		// Cancel the market (ownership is checked in the DB layer)
+		return await cancelMarket({ marketId, userId: user.id, lang });
+	} catch (error) {
+		handleNuxtErrorMessages({ error, errorTranslated: t(lang, 'server.error.cancelingMarket'), errorMessage: 'Error canceling market' });
+	}
 });
 ```
 
@@ -248,30 +248,30 @@ One module per entity. Only these files may call Knex.
 ```js
 // Create a new market
 export const createMarket = async ({ userId, marketData, lang = 'en' }) => {
-    const knex = getKnex();
+	const knex = getKnex();
 
-    try {
-        // Validate parameters
-        if (!userId || !marketData) {
-            throw new Error('User ID and market data are required');
-        }
+	try {
+		// Validate parameters
+		if (!userId || !marketData) {
+			throw new Error('User ID and market data are required');
+		}
 
-        // Validate market data schema
-        const validatedData = validateMarketSchema({ marketData, lang });
+		// Validate market data schema
+		const validatedData = validateMarketSchema({ marketData, lang });
 
-        // Build the market record
-        const market = { id: uuidv4(), userId, name: validatedData.name };
+		// Build the market record
+		const market = { id: uuidv4(), userId, name: validatedData.name };
 
-        // Insert the market and its related rows atomically
-        await knex.transaction(async trx => {
-            await trx('markets').insert(market);
-        });
+		// Insert the market and its related rows atomically
+		await knex.transaction(async trx => {
+			await trx('markets').insert(market);
+		});
 
-        // Return the created market
-        return market;
-    } catch (error) {
-        handleError({ error, errorMessage: 'Error creating market', throwError: true });
-    }
+		// Return the created market
+		return market;
+	} catch (error) {
+		handleError({ error, errorMessage: 'Error creating market', throwError: true });
+	}
 };
 ```
 
@@ -343,39 +343,39 @@ import { defineConfig } from 'vitest/config';
 const projectRoot = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-    test: {
-        projects: [
-            // Server and shared code: plain Node, the database is mocked with SQLite
-            {
-                resolve: {
-                    alias: {
-                        '~~': projectRoot,
-                        '~': resolve(projectRoot, 'app')
-                    }
-                },
-                test: {
-                    name: 'server',
-                    environment: 'node',
-                    include: ['tests/server/**/*.test.js', 'tests/shared/**/*.test.js']
-                }
-            },
+	test: {
+		projects: [
+			// Server and shared code: plain Node, the database is mocked with SQLite
+			{
+				resolve: {
+					alias: {
+						'~~': projectRoot,
+						'~': resolve(projectRoot, 'app')
+					}
+				},
+				test: {
+					name: 'server',
+					environment: 'node',
+					include: ['tests/server/**/*.test.js', 'tests/shared/**/*.test.js']
+				}
+			},
 
-            // Frontend: runs inside a Nuxt app (auto-imports, i18n, useState...) in a simulated browser
-            await defineVitestProject({
-                test: {
-                    name: 'app',
-                    environment: 'nuxt',
-                    include: ['tests/app/**/*.test.js'],
-                    hookTimeout: 60000, // Booting the Nuxt app for each file can take more than the default 10s
-                    environmentOptions: {
-                        nuxt: {
-                            domEnvironment: 'happy-dom'
-                        }
-                    }
-                }
-            })
-        ]
-    }
+			// Frontend: runs inside a Nuxt app (auto-imports, i18n, useState...) in a simulated browser
+			await defineVitestProject({
+				test: {
+					name: 'app',
+					environment: 'nuxt',
+					include: ['tests/app/**/*.test.js'],
+					hookTimeout: 60000, // Booting the Nuxt app for each file can take more than the default 10s
+					environmentOptions: {
+						nuxt: {
+							domEnvironment: 'happy-dom'
+						}
+					}
+				}
+			})
+		]
+	}
 });
 ```
 
@@ -389,15 +389,15 @@ export default defineConfig({
 ```js
 // Share the in-memory database with the mock factory and stub the Nitro globals, since Vitest hoists vi.mock
 const database = vi.hoisted(async () => {
-    const { createError } = await import('h3');
-    globalThis.createError = createError;
-    return { knex: null };
+	const { createError } = await import('h3');
+	globalThis.createError = createError;
+	return { knex: null };
 });
 
 // Run the queries against an in-memory SQLite database instead of MySQL
 vi.mock('~~/server/db/config/connection.js', async () => {
-    const hoistedDatabase = await database;
-    return { getKnex: () => hoistedDatabase.knex };
+	const hoistedDatabase = await database;
+	return { getKnex: () => hoistedDatabase.knex };
 });
 
 // Load the module under test after the mocks
