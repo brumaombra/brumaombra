@@ -62,7 +62,8 @@ Apply Musk's algorithm in this order. Never skip ahead: optimizing something tha
 **3. Parts to delete**, sorted by impact, each as:
 
 ```
-**What**: short name
+---
+## Short name
 **Location**: files, packages, or tables
 **Evidence**: why it's unused or redundant (searches, references, history)
 **Saves**: lines, files, dependencies, bundle size, or maintenance
