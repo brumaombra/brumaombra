@@ -4,7 +4,7 @@ The project is an app deployed to one or more environments (for example producti
 
 ## Hosting
 
-- **Static apps** are hosted on Cloudflare Pages.
+- **Static apps** are hosted on Cloudflare Pages. Pages may show some branches as deployable even though their deployments are actually skipped: judge which branches deploy by the deployments that really ran, not by that setting.
 - **Non-static apps** are hosted on a VPS managed with Coolify.
 
 Check whether this project is static or not to know where it's deployed, and use that platform to check its deployments and status.
@@ -12,7 +12,7 @@ Check whether this project is static or not to know where it's deployed, and use
 ## Tools
 
 - **Sentry MCP:** every non-static project has a Sentry project attached. Use it to check errors when relevant.
-- **Coolify MCP:** for non-static apps, use it to check the status of applications, deployments, and logs.
+- **Coolify MCP:** for non-static apps, use it to check the status of applications, deployments, and logs. A stopped container may show as unhealthy: that's expected, not a problem.
 - **Cloudflare MCP:** use it to manage the project's Cloudflare functionalities. Ask before changing any configuration.
 
 ## Deploying

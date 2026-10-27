@@ -3,14 +3,14 @@ set -eo pipefail
 
 # --------- Configuration ---------
 
-PROJECT_NAME="" # Name of the project's repository (the main project of the sessions)
-NODE_VERSION=24.21.0 # Exact Node version the project needs
-DEPLOY=true # Whether the project is a deployed app (adds the deploy rules)
-WEB=true # Whether the project has a web UI (adds the web rules)
-MYSQL=false # Whether to install MySQL and its rules (the database is created at session start from the MYSQL_* variables)
-R2=false # Whether to add the Cloudflare R2 upload rules (needs the R2 network secret)
-RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # URL to download the rules from
-RULES_LIST="common personality" # List of rules to download (space-separated, without the .md extension)
+PROJECT_NAME="" # Main repository name
+NODE_VERSION=24.21.0 # Exact Node version
+DEPLOY=true # Deployed app
+WEB=true # Has a web UI
+MYSQL=false # Uses a local MySQL
+R2=false # Uploads to R2
+RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # Rules location
+RULES_LIST="common personality" # Rules always downloaded
 
 # --------- Setup ---------
 
