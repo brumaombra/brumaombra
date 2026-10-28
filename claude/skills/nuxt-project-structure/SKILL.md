@@ -16,7 +16,7 @@ Conventions for Nuxt + Nitro apps built on Knex, Zod, and Firebase Auth. For gen
 
 | Layer | Technology |
 |---|---|
-| Framework | Nuxt + Nitro, `srcDir: 'app/'`, `ssr: true` |
+| Framework | Nuxt + Nitro |
 | UI | Vue 3 Composition API, `<script setup>` only |
 | Styling | Tailwind CSS 4 via `@tailwindcss/vite`, CSS variables in `app/assets/css/main.css` |
 | State | `useState` stores (never Pinia or Vuex) |
@@ -79,7 +79,6 @@ Imports: `~/` for app code, `~~/` for `server/` and `shared/` (`~/` points to `a
 
 Preserve these patterns rather than reintroducing old config shapes:
 
-- `srcDir: 'app/'` and `ssr: true`.
 - Top-level `routeRules` own SSR, caching, and security headers per route. Protected areas (admin, private) are controlled here.
 - `nitro.experimental.tasks = true`, with cron jobs in `nitro.scheduledTasks`.
 - `nitro.prerender.routes = await createAppRoutesList()`.
