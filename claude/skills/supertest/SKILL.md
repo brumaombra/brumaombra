@@ -23,8 +23,8 @@ Test an app in two waves of parallel subagents that behave **exactly like real u
 
 Read the README, routes, pages, API handlers, and data model, then build a test map:
 
-- how to reach the app: URL, dev server command, test accounts, seed data
-- 3–8 independent feature areas (for example login, payments, search, profile, admin), each with its pages, user flows, and riskiest logic (money, permissions, deletions)
+- How to reach the app: URL, dev server command, test accounts, seed data.
+- 3–8 independent feature areas (for example login, payments, search, profile, admin), each with its pages, user flows, and riskiest logic (money, permissions, deletions).
 
 Show me the map in a few lines, then start Wave 1 unless something is unclear or risky.
 
@@ -32,8 +32,8 @@ Show me the map in a few lines, then start Wave 1 unless something is unclear or
 
 Spawn one subagent per area, **all in parallel in a single message**. Prompts must be self-contained: the area, its URLs and flows, the accounts and data prefix, the rules above, and the report format. Tell them to test:
 
-- the main happy paths, forms with typical mistakes, what logged-out and other users see, and empty, single-item, and many-item states
-- on every screen, on desktop and mobile: correct content, working links and buttons, clear errors, no broken layout, no console errors
+- The main happy paths, forms with typical mistakes, what logged-out and other users see, and empty, single-item, and many-item states.
+- On every screen, on desktop and mobile: correct content, working links and buttons, clear errors, no broken layout, no console errors.
 
 **Gate:** if any common case fails, stop, report, and ask whether to fix first. Edge cases on a broken foundation only produce noise. If all pass, continue.
 

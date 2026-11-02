@@ -21,7 +21,7 @@ Conventions for Nuxt + Nitro apps built on Knex, Zod, and Firebase Auth. For gen
 | Styling | Tailwind CSS 4 via `@tailwindcss/vite`, CSS variables in `app/assets/css/main.css` |
 | State | `useState` stores (never Pinia or Vuex) |
 | Database | MySQL via Knex.js, migrations in `server/db/migrations/` |
-| Auth | Firebase Auth (client) + Firebase Admin SDK (server) |
+| Auth | Server-side Google OAuth + Firebase Auth session cookies (Firebase Admin SDK, no Firebase client SDK) |
 | Validation | Zod in `server/utils/objectsSchemas.js` |
 | Icons | Hugeicons (`@hugeicons/core-free-icons`, `@hugeicons/vue`), never FontAwesome |
 | Errors | Sentry via `server/sentry/instrument.js` |
@@ -29,7 +29,7 @@ Conventions for Nuxt + Nitro apps built on Knex, Zod, and Firebase Auth. For gen
 | Content | Nuxt Content + MDC components in `app/components/content/` |
 | Images | `@nuxt/image` |
 | Jobs | Nitro experimental tasks + `scheduledTasks` |
-| Tests | Vitest + `@nuxt/test-utils` (happy-dom), in-memory SQLite via `better-sqlite3` |
+| Tests | Vitest + `@nuxt/test-utils` (happy-dom), in-memory SQLite via `node:sqlite` (`tests/helpers/nodeSqliteClient.js`, no `better-sqlite3`) |
 
 ## Layout
 
@@ -43,32 +43,34 @@ app/
   composables/
     stores/                # useXStore.js files (optionally common/ private/ public/)
     useUtils.js            # Shared client helpers
-    useFirebase.js         # Client auth
-  layouts/                 # e.g. default, public, private, landing
-  middleware/auth.js
+    useAuth.js             # Signed-in user, sign-in, logout, account deletion
+  layouts/                 # dashboard (app pages), landing (home, blog, legal, login), default
+  middleware/auth.global.js # Route guard (pages with requiresAuth)
   pages/
-  plugins/                 # *.client.js for browser-only plugins
+  plugins/                 # auth.js loads the signed-in user; *.client.js for browser-only plugins
 content/                   # Markdown (blog/, <locale>/blog/)
 i18n/locales/              # en.json, it.json, ...
 server/
   api/                     # Nitro route handlers
-    public/                # Unauthenticated endpoints only
+    auth/                  # google.get.js, callback/google.get.js, logout.post.js
+  auth/                    # googleOAuth.js (OAuth + Firebase sign-in), accounts.js (app user on first sign-in)
   db/
-    config/                # connection.js (getKnex) + db.sql schema snapshot
+    config/                # connection.js (getKnex)
     migrations/
     <entity>.js            # One module per entity (markets.js, users.js)
-  firebase/firebaseAdmin.js
+  firebase/firebaseAdmin.js # Admin SDK, session cookie, getCurrentUser(event)
   middleware/security.js   # Runs on every request
   sentry/instrument.js
   sse/                     # Server-sent events connection registries
   tasks/                   # Nitro scheduled tasks
   utils/                   # i18n.js, objectsSchemas.js, utils.js
-shared/utils/              # Code used by both app and server
+shared/utils/              # Code used by both app and server (redirects.js: readSafeRedirectPath)
 tests/
   app/                     # Components, middleware, composables, locales (Nuxt environment)
   server/                  # DB functions, handlers, middleware, SSE, tasks (Node environment)
   shared/                  # Pure shared utilities (Node environment)
   helpers/database.js      # In-memory SQLite schema + insert helpers
+  helpers/nodeSqliteClient.js # Knex client for node:sqlite
 nuxt.config.ts
 vitest.config.js
 ```
@@ -171,24 +173,34 @@ export const resetMarketsSearchStore = () => {
 
 ### Pages
 
-Each page declares its layout, middleware, SEO, and schema:
+Each page declares its SEO, its structured data, and then its page metadata, in this order:
 
 ```js
-// Define page metadata
-definePageMeta({
-	layout: 'private', // Use a layout that exists in app/layouts/
-	middleware: 'auth' // Required for protected routes
-});
-
 // Define SEO metadata
 useSeoMeta(createSEOMetatags({
 	title: t('seo.markets.title'),
 	description: t('seo.markets.description'),
 	url: route.path
 }));
+
+// Define the breadcrumbs (public pages)
+useSchemaOrg([
+	defineBreadcrumb({
+		itemListElement: [
+			{ name: t('seo.home.breadcrumb'), item: localePath('/') },
+			{ name: t('seo.markets.breadcrumb'), item: localePath('/markets') }
+		]
+	})
+]);
+
+// Define page metadata
+definePageMeta({
+	layout: 'dashboard', // Use a layout that exists in app/layouts/
+	requiresAuth: true // Signed-in users only (checked by auth.global.js)
+});
 ```
 
-- Match the layout already used by sibling routes. Blog pages use `public`.
+- Match the layout already used by sibling routes: `dashboard` for the app pages (markets, users, private), `landing` for the home page, blog, legal pages, and login.
 - Titles, descriptions, and breadcrumbs always come from i18n keys.
 - SSR and caching for private or admin areas are set in `routeRules`, not per page.
 
@@ -236,7 +248,7 @@ export default defineEventHandler(async event => {
 });
 ```
 
-- Protected handlers call `getCurrentUser(event)` first. Only `server/api/public/` skips auth, and uses `readLanguageFromRequest(event)` for translated messages.
+- Every handler that touches user data calls `getCurrentUser(event)` first. Protected ones throw a 401 when there is no user; handlers open to visitors start with `let lang = readLanguageFromRequest(event)` and then use `user?.language || lang`.
 - Handlers never call Knex. They read input and delegate to a `server/db/` function.
 - The whole body goes in `try / catch` with `handleNuxtErrorMessages()`.
 
@@ -259,7 +271,7 @@ export const createMarket = async ({ userId, marketData, lang = 'en' }) => {
 		const validatedData = validateMarketSchema({ marketData, lang });
 
 		// Build the market record
-		const market = { id: uuidv4(), userId, name: validatedData.name };
+		const market = { id: randomUUID(), userId, name: validatedData.name };
 
 		// Insert the market and its related rows atomically
 		await knex.transaction(async trx => {
@@ -275,7 +287,7 @@ export const createMarket = async ({ userId, marketData, lang = 'en' }) => {
 ```
 
 - Call `getKnex()` inside the function, never at module level.
-- Generate IDs with `uuidv4()`.
+- Generate IDs with `randomUUID()` from `node:crypto` (no `uuid` package).
 - Use `knex.transaction(async trx => { ... })` for any multi-step or multi-table write.
 - Use `.forUpdate()` when a transaction reads a value and then updates it (balances, counters, statuses).
 - Check ownership inside the DB function before updating or deleting (for example, `market.userId !== userId` → 403).
@@ -283,7 +295,7 @@ export const createMarket = async ({ userId, marketData, lang = 'en' }) => {
 - Use the query builder. `knex.raw()` is only for fragments the builder can't express (window functions, `CASE` ordering), never whole SQL statements.
 - Keep the existing serialization of stored JSON fields; don't redesign it in a focused change.
 
-**Migrations and schema:** add a Knex migration with a one-line header comment and `up` / `down`, then update `server/db/config/db.sql` to match. Column conventions:
+**Migrations and schema:** add a Knex migration with a header comment and `up` / `down`, and update the test schema in `tests/helpers/database.js` to match. Column conventions:
 
 | Field | Definition |
 |---|---|
@@ -378,7 +390,7 @@ export default defineConfig({
 });
 ```
 
-- **Server tests** stub the Nitro globals (`createError` from `h3`, `defineEventHandler = handler => handler`, `readBody`...) inside `vi.hoisted`, mock the boundaries (`~~/server/db/config/connection.js`, Sentry, Firebase Admin, notifications, SSE), then load the module under test with `await import(...)` after the mocks.
+- **Server tests** keep `vi.hoisted` synchronous (an async block races the mock registration and can load the real modules), mock the boundaries (`~~/server/db/config/connection.js`, Sentry, Firebase Admin, notifications, SSE), set the Nitro globals they need at module level (`globalThis.createError = createError`, with `createError` imported from `h3`), then load the module under test with `await import(...)` after the mocks.
 - **DB functions** run real queries on in-memory SQLite: `getKnex` is mocked to return the database from `createTestDatabase()` in `tests/helpers/database.js`, recreated in `beforeEach` and destroyed in `afterEach`. Insert rows with the `insertX(knex, overrides)` helpers and assert on the database state. Update the helper schema with every migration.
 - **API handlers** are called as plain functions with a minimal `buildEvent()` object and mocked DB modules; assert with `rejects.toMatchObject({ statusCode: 400 })`.
 - **Frontend tests** mount with `mountSuspended`, set state through the real stores, mock auto-imports with `mockNuxtImport`, and interact like a user (`setValue`, `trigger('click')`, assert on text and `emitted`).
@@ -386,18 +398,19 @@ export default defineConfig({
 - Every bug fix gets a test whose comment describes the bug. Prioritize money, auth, ownership, and input validation paths.
 
 ```js
-// Share the in-memory database with the mock factory and stub the Nitro globals, since Vitest hoists vi.mock
-const database = vi.hoisted(async () => {
-	const { createError } = await import('h3');
-	globalThis.createError = createError;
-	return { knex: null };
-});
+import { createError } from 'h3';
+
+// Share the in-memory database with the mock factory, since Vitest hoists vi.mock
+// Synchronous on purpose: an async block (e.g. a dynamic import) races the mock registration and can load the real modules
+const database = vi.hoisted(() => ({ knex: null }));
 
 // Run the queries against an in-memory SQLite database instead of MySQL
-vi.mock('~~/server/db/config/connection.js', async () => {
-	const hoistedDatabase = await database;
-	return { getKnex: () => hoistedDatabase.knex };
-});
+vi.mock('~~/server/db/config/connection.js', () => ({
+	getKnex: () => database.knex
+}));
+
+// The Nitro global used by the queries (only called at runtime, so it can be set after the hoisted block)
+globalThis.createError = createError;
 
 // Load the module under test after the mocks
 const { closeDueMarkets } = await import('../../server/db/markets.js');
@@ -413,7 +426,7 @@ Work through the layers in this order, skipping those the feature doesn't touch:
 4. `app/composables/` and `stores/`: shared logic and state, with a reset function.
 5. `server/api/`: the endpoint, with auth and error handling.
 6. `server/db/`: persistence, transactions, and ownership checks.
-7. Migration + `server/db/config/db.sql` if the schema changes.
+7. A migration if the schema changes.
 8. `server/utils/objectsSchemas.js`: validation.
 9. `i18n/locales/`: keys in every locale.
 10. `tests/`: cover the new behavior (DB functions against SQLite, handlers, components), and update `tests/helpers/database.js` if the schema changed.
