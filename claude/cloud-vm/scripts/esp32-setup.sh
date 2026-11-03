@@ -5,6 +5,8 @@ set -eo pipefail
 
 PLATFORMIO_VERSION=6.2.0 # Exact PlatformIO Core version the projects need
 PLATFORMS="espressif32" # PlatformIO platforms to preinstall (space-separated, toolchains are downloaded on the first build)
+MODELLING=true # Whether to install FreeCAD and the 3D modelling rules
+FREECAD_VERSION=1.1.3 # Exact FreeCAD version from conda-forge
 RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # URL to download the rules from
 RULES_LIST="personality esp32" # List of rules to download (space-separated, without the .md extension)
 
@@ -35,6 +37,26 @@ for platform in $PLATFORMS; do
         echo "Could not install the $platform platform"
     fi
 done
+
+# 3D modelling: install FreeCAD (with matplotlib for the previews) in its own micromamba environment, and add its rules
+if [ "$MODELLING" = true ]; then
+    # Add the 3D modelling rules to the list of rules to download
+    RULES_LIST="$RULES_LIST 3d-modelling"
+
+    # Install micromamba if not already installed
+    MAMBA_DIR="/opt/micromamba"
+    if [ ! -x "$MAMBA_DIR/bin/micromamba" ]; then
+        mkdir -p "$MAMBA_DIR"
+        curl -fsSL "https://micro.mamba.pm/api/micromamba/linux-64/latest" | tar -xj -C "$MAMBA_DIR" bin/micromamba
+    fi
+
+    # Create the freecad environment with FREECAD_VERSION if it doesn't have it yet
+    FREECAD_ENV="$MAMBA_DIR/envs/freecad"
+    if ! "$MAMBA_DIR/bin/micromamba" list -p "$FREECAD_ENV" 2>/dev/null | grep -E "^ *freecad +$FREECAD_VERSION " >/dev/null; then
+        rm -rf "$FREECAD_ENV"
+        MAMBA_ROOT_PREFIX="$MAMBA_DIR" "$MAMBA_DIR/bin/micromamba" create -y -q -n freecad -c conda-forge "freecad=$FREECAD_VERSION" matplotlib
+    fi
+fi
 
 # Claude rules for cloud sessions, replaced on every run (a failed download doesn't block the session)
 RULES_DIR="/root/.claude/rules"
