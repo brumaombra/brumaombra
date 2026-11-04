@@ -21,7 +21,8 @@ Follow the FreeCAD best practices, so the documents stay editable and don't brea
 
 - Part Design workbench: one Body per part.
 - Every dimension lives in a `Params` spreadsheet, in named cells, with a short note on where the value comes from. Sketches and features read their sizes from it with expressions: no hard-coded numbers in the model.
-- Sketches are fully constrained, and attached to the Body's origin planes or to datum planes, never to the faces of other features (that breaks the model when an earlier feature changes).
+- Sketches are fully constrained, and attached to the Body's origin planes or to datum planes, never to the faces of other features (FreeCAD 1.0 mitigates the topological naming problem, but face references can still break when an earlier feature changes).
+- In scripts, select the edges for fillets and chamfers by their position or geometry, never by generated names like `Edge12`: those names change whenever an earlier feature changes.
 - Give every object a clear name (`LidSketch`, `ButtonHolePocket`, not `Sketch001`).
 - Check the fit in an assembly document with reference models of the other parts and boards, which are never printed.
 - Before exporting, recompute and check: no object in error, a valid shape, one solid per part.
