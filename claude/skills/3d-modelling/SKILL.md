@@ -27,6 +27,13 @@ Follow the FreeCAD best practices, so the documents stay editable and don't brea
 - Check the fit in an assembly document with reference models of the other parts and boards, which are never printed.
 - Before exporting, recompute and check: no object in error, a valid shape, one solid per part.
 
+## Script pitfalls
+
+- Check a taper by slicing the result: in Part Design a positive `TaperAngle` widens a pad, and the sign for a pocket depends on its direction.
+- Wrap an expression in parentheses when it goes inside another one (`f'({width}) - 2 * ({radius})'`).
+- `freecadcmd` drops the message of a `SystemExit`: print the error, flushed, before stopping.
+- Measure with `optimalBoundingBox()`: the plain bounding box can be larger than a curved part.
+
 ## Source of truth
 
 - While we design together, the script is the source: it regenerates the `.FCStd`, STEP, and STL. If I change values in FreeCAD and commit the document, copy them back into the script before running it again.
