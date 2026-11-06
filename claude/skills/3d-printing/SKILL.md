@@ -29,7 +29,7 @@ Design parts that print well on my printer and fit on the first print.
 ## Details that make prints good
 
 - **Holes:** printed holes come out smaller than modelled, small ones more: add about 0.2 mm to holes that need a precise fit (0.3 mm under 4 mm), and give horizontal holes a teardrop or flat top, or make them a notch closed by the mating part.
-- **Screw holes:** a pilot 0.1 mm under the thread, the screw biting 2 × its diameter, 1 mm of extra depth, a 0.4 mm 45° lead-in, and 2 mm of wall around it. Stop the screw when snug.
+- **Screw holes:** a pilot as wide as the thread (3.0 mm for M3), the screw biting 2 × its diameter, 1 mm of extra depth, a 0.4 mm 45° lead-in, and 2 mm of wall around it. Stop the screw when snug.
 - **Boards:** guide them where they have no pins, with crush ribs (0.6 mm wide, 0.15 mm past the board) for no play, and stops that take the plugging force off the solder joints. Keep antennas on plastic, away from metal.
 - **First layer:** keep bed edges sharp with the slicer's elephant foot compensation, and chamfer them 0.4 mm only if a print shows a lip. Round the corners of large flat parts, so they don't lift.
 - **Rounded edges:** a rounding on the bed overhangs: put it on top, or end it with a thin 45° strip at the bed.
