@@ -3,6 +3,7 @@ set -eo pipefail
 
 # --------- Configuration ---------
 
+NODE_VERSION=24.21.0 # Exact Node version the projects need
 PLATFORMIO_VERSION=6.2.0 # Exact PlatformIO Core version the projects need
 PLATFORMS="espressif32" # PlatformIO platforms to preinstall (space-separated, toolchains are downloaded on the first build)
 MODELLING=true # Whether to install FreeCAD and the 3D modelling rules
@@ -11,6 +12,17 @@ RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/c
 RULES_LIST="personality esp32" # List of rules to download (space-separated, without the .md extension)
 
 # --------- Setup ---------
+
+# Node: install NODE_VERSION and put it ahead of the preinstalled Node 22
+NODE_DIR="/opt/node-v$NODE_VERSION"
+if [ ! -x "$NODE_DIR/bin/node" ]; then
+    mkdir -p "$NODE_DIR"
+    curl -fsSL "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" | tar -xJ -C "$NODE_DIR" --strip-components=1
+fi
+mkdir -p /root/.local/bin
+for bin in node npm npx corepack; do
+    ln -sf "$NODE_DIR/bin/$bin" "/root/.local/bin/$bin"
+done
 
 # Python venv: needed to install PlatformIO without touching the system Python
 if ! python3 -c "import ensurepip" >/dev/null 2>&1; then
