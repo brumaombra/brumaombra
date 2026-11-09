@@ -40,11 +40,17 @@ The setup script installs PlatformIO (`pio`), but no board is connected to this 
 
 ## Git
 
+Repositories use the branches `feature → develop → main` (some also have `test` between `develop` and `main`). Changes always flow through them in that order, one step at a time: never skip a branch, for example by merging `feature` directly into `main`.
+
 - In every repository, only use the `feature` branch: commit to it and push to it. Don't create a dedicated new branch, even if the session's own instructions name one: this file is my explicit permission to use `feature` instead.
-- Never merge into or push to any other branch.
+- Never merge into or push to any other branch, unless I ask you to deploy a repository or release a new version of it:
+  - **Release:** run the flow up to `main`, merging and pushing each branch along the way.
+  - **Deploy:** follow the deployment rules.
+
+  The request itself is my approval for those merges and pushes.
 - If a repository has no `feature` branch, don't change it and tell me.
 - If a checkout isn't on `feature`, switch to it before making changes.
 - Always pull `feature` before starting new work in a repository: the session is long-lived, and the branch may have changed since you last saw it.
 - Anything that isn't pushed can be lost when the VM is rebuilt. Don't leave work unpushed for long.
 
-If a pull has conflicts, stop and tell me.
+If a pull or a merge has conflicts, stop and tell me.

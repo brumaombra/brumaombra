@@ -9,7 +9,7 @@ PLATFORMS="espressif32" # PlatformIO platforms to preinstall (space-separated, t
 MODELLING=true # Whether to install FreeCAD and the 3D modelling rules
 FREECAD_VERSION=1.1.3 # Exact FreeCAD version from conda-forge
 RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # URL to download the rules from
-RULES_LIST="personality esp32" # List of rules to download (space-separated, without the .md extension)
+RULES_LIST="personality esp32 deploy" # List of rules to download (space-separated, without the .md extension)
 
 # --------- Setup ---------
 
