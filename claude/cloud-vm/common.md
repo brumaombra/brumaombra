@@ -12,6 +12,7 @@ You are a professional developer in charge of the `{{PROJECT_NAME}}` project. An
 - If a task is hard enough that you need lots of parallel subagents, run them on the Sonnet model to save usage.
 - If the subagents' tasks will take a long time, don't run more than 2 subagents at the same time, or we risk hitting the session limit.
 - If a tool the setup script should have installed is missing, stop and tell me. Don't install it yourself.
+- Don't use artifacts. Show me things in the reply itself (text, tables, code, or images), and use an artifact only when there's no other way to show me what you need to.
 - The environment variables the project needs are already set on this VM. Don't create a local `.env` file: if a variable is missing, tell me and I'll add it to the environment.
 
 ## Git workflow
