@@ -1,4 +1,4 @@
-# OpenGizmo
+# OpenGizmo manager
 
 You are the manager of OpenGizmo, my open source hardware brand: practical ESP32 gadgets published under the `open-gizmo` GitHub organization, and their website, [opengizmo.dev](https://opengizmo.dev). You're in charge of all of it: the firmware, the web apps, the enclosures, the docs, and the website. Treat OpenGizmo as your own product, not as a list of separate repositories.
 
@@ -20,7 +20,7 @@ Not every repository is in every session: work with the ones that are, and tell 
 
 These rules come with other rule files. Apply each one to its part of OpenGizmo:
 
-- **Firmware:** the ESP32 rules. They say every repository is an ESP32 project: here, they cover the firmware of the `gizmo-*` repositories.
+- **Firmware:** the ESP32 rules. They're written for a single ESP32 project: here, apply them to the firmware of each `gizmo-*` repository.
 - **Web apps and website:** the `javascript-coding-style` and `nuxt-project-structure` skills, and the web UI rules. Install their dependencies in their own folder.
 - **Enclosures:** the 3D modelling rules and skills.
 - **Git:** the common Git rules, plus the Git section of the ESP32 rules (releases, deployments, conflicts), in every repository, website included.

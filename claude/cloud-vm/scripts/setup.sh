@@ -1,14 +1,28 @@
 #!/bin/bash
 set -eo pipefail
 
-# Configuration examples for each environment: README.md
+# What each preset is for: README.md
 
 # --------- Configuration ---------
 
-# Rules to download
-RULES_LIST="common personality deploy web"
+PRESET="app-developer" # app-developer, apps-admin, esp32-developer, opengizmo-manager, or 3d-designer
+EXTRA_RULES="" # Optional add-ons: r2, mysql
 
 # --------- Setup ---------
+
+# Rules of each preset
+case "$PRESET" in
+    app-developer) RULES_LIST="common personality deploy web" ;;
+    apps-admin) RULES_LIST="common personality apps-admin" ;;
+    esp32-developer) RULES_LIST="common personality esp32-developer deploy 3d-modelling" ;;
+    opengizmo-manager) RULES_LIST="common personality opengizmo-manager esp32-developer deploy web 3d-modelling" ;;
+    3d-designer) RULES_LIST="common personality 3d-modelling" ;;
+    *)
+        echo "Unknown PRESET: $PRESET" >&2
+        exit 1
+        ;;
+esac
+RULES_LIST="$RULES_LIST $EXTRA_RULES"
 
 # Check if a rule is in RULES_LIST
 has_rule() {
@@ -30,8 +44,8 @@ for bin in node npm npx corepack; do
     ln -sf "$NODE_DIR/bin/$bin" "/root/.local/bin/$bin"
 done
 
-# PlatformIO (esp32 rules): install PLATFORMIO_VERSION in its own venv, put its commands on the PATH, and preinstall the platforms
-if has_rule esp32; then
+# PlatformIO (esp32-developer rules): install PLATFORMIO_VERSION in its own venv, put its commands on the PATH, and preinstall the platforms
+if has_rule esp32-developer; then
     PLATFORMIO_VERSION=6.2.0 # Exact PlatformIO version
     PLATFORMS="espressif32" # PlatformIO platforms to preinstall
 
