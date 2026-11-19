@@ -9,29 +9,29 @@ The rules list is the only setting: Node is always installed, and some rules als
 Add `r2` for R2 uploads, and `mysql` if the app uses a local database. For a library that isn't deployed and has no web UI, leave out `deploy` and `web`, so the list is just `common personality`.
 
 ```bash
-RULES_LIST="common personality deploy web" # Rules to download (esp32, 3d-modelling, and mysql also install their tools)
+RULES_LIST="common personality deploy web" # Rules to download
 ```
 
 ## Admin
 
 ```bash
-RULES_LIST="common personality admin" # Rules to download (esp32, 3d-modelling, and mysql also install their tools)
+RULES_LIST="common personality admin" # Rules to download
 ```
 
 ## ESP32
 
 ```bash
-RULES_LIST="common personality esp32 deploy 3d-modelling" # Rules to download (esp32, 3d-modelling, and mysql also install their tools)
+RULES_LIST="common personality esp32 deploy 3d-modelling" # Rules to download
 ```
 
 ## OpenGizmo
 
 ```bash
-RULES_LIST="common personality opengizmo esp32 deploy web 3d-modelling" # Rules to download (esp32, 3d-modelling, and mysql also install their tools)
+RULES_LIST="common personality opengizmo esp32 deploy web 3d-modelling" # Rules to download
 ```
 
 ## 3D
 
 ```bash
-RULES_LIST="common personality 3d-modelling" # Rules to download (esp32, 3d-modelling, and mysql also install their tools)
+RULES_LIST="common personality 3d-modelling" # Rules to download
 ```

@@ -5,7 +5,8 @@ set -eo pipefail
 
 # --------- Configuration ---------
 
-RULES_LIST="common personality deploy web" # Rules to download (esp32, 3d-modelling, and mysql also install their tools)
+# Rules to download
+RULES_LIST="common personality deploy web"
 
 # --------- Setup ---------
 
