@@ -1,4 +1,4 @@
-# Instructions
+# ESP32 projects
 
 You are a professional firmware developer in charge of all my ESP32 projects, built with PlatformIO. Every repository in this session is one of them, and you can work on several of them at the same time.
 
@@ -13,19 +13,14 @@ The setup script installs PlatformIO (`pio`), but no board is connected to this 
 
 ## Guidelines
 
-- Check the available skills before every change; there may be one that covers the task.
 - Format all the C/C++ code you write or edit the same way the `javascript-coding-style` skill explains. Apply everything that makes sense in C/C++, and follow the language's own conventions where JavaScript has no equivalent.
-- Libraries come from `lib_deps` in `platformio.ini`, pinned to exact versions. If the repo also has a `package.json`, install its dependencies with `npm ci`, so they match the lockfile exactly.
-- Ask before adding new libraries or dependencies, and explain why each one is needed.
-- If a task is hard enough that you need lots of parallel subagents, run them on the Sonnet model to save usage.
-- If the subagents' tasks will take a long time, don't run more than 2 subagents at the same time, or we risk hitting the session limit.
-- If a tool the setup script should have installed is missing, stop and tell me. Don't install it yourself.
+- Libraries come from `lib_deps` in `platformio.ini`, pinned to exact versions.
 - Before your first build in a repository, run `pio pkg install` in its folder to download the platforms, toolchains, and libraries it needs. If a download fails, stop and tell me: the network access of the environment probably needs to be extended.
 
 ## Building and testing
 
 - There's no hardware here: never run `pio run -t upload`, `pio device monitor`, or anything else that needs a serial port.
-- After each change, double-check it before calling it done: review your diff, then build every environment it affects with `pio run -e <env>`, and fix any new warnings along with the errors.
+- To double-check a change, build every environment it affects with `pio run -e <env>`, and fix any new warnings along with the errors.
 - Keep an eye on flash and RAM usage in the build output. If a change makes either one grow noticeably, or pushes it above 80%, tell me.
 - Put logic that doesn't touch the hardware (parsing, state machines, calculations) where it can be tested on the host, and test it with `pio test -e native` if the project has a native environment. If it doesn't and the logic is worth testing, suggest adding one.
 - Run `pio check` on the changed code after bigger changes, and fix the issues it reports in the code you touched.
@@ -40,17 +35,7 @@ The setup script installs PlatformIO (`pio`), but no board is connected to this 
 
 ## Git
 
-Repositories use the branches `feature → develop → main` (some also have `test` between `develop` and `main`). Changes always flow through them in that order, one step at a time: never skip a branch, for example by merging `feature` directly into `main`.
-
-- In every repository, only use the `feature` branch: commit to it and push to it. Don't create a dedicated new branch, even if the session's own instructions name one: this file is my explicit permission to use `feature` instead.
-- Never merge into or push to any other branch, unless I ask you to deploy a repository or release a new version of it:
-  - **Release:** run the flow up to `main`, merging and pushing each branch along the way.
+- When I ask you to deploy a repository or release a new version of it, the request itself is my approval for the merges and pushes it needs:
+  - **Release:** merge the task's pull request into `develop`, then run the branch flow up to `main`, merging and pushing each branch along the way.
   - **Deploy:** follow the deployment rules.
-
-  The request itself is my approval for those merges and pushes.
-- If a repository has no `feature` branch, don't change it and tell me.
-- If a checkout isn't on `feature`, switch to it before making changes.
-- Always pull `feature` before starting new work in a repository: the session is long-lived, and the branch may have changed since you last saw it.
-- Anything that isn't pushed can be lost when the VM is rebuilt. Don't leave work unpushed for long.
-
-If a pull or a merge has conflicts, stop and tell me.
+- If a pull or a merge has conflicts, stop and tell me.

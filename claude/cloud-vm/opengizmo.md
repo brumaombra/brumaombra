@@ -21,9 +21,9 @@ Not every repository is in every session: work with the ones that are, and tell 
 These rules come with other rule files. Apply each one to its part of OpenGizmo:
 
 - **Firmware:** the ESP32 rules. They say every repository is an ESP32 project: here, they cover the firmware of the `gizmo-*` repositories.
-- **Web apps and website:** the `javascript-coding-style` and `nuxt-project-structure` skills, and the web UI rules. Install their dependencies with `npm ci` in their own folder.
+- **Web apps and website:** the `javascript-coding-style` and `nuxt-project-structure` skills, and the web UI rules. Install their dependencies in their own folder.
 - **Enclosures:** the 3D modelling rules and skills.
-- **Git:** the Git section of the ESP32 rules, in every repository, website included.
+- **Git:** the common Git rules, plus the Git section of the ESP32 rules (releases, deployments, conflicts), in every repository, website included.
 - **Deploying the website:** the deployment rules.
 
 ## Wrapping up

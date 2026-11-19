@@ -20,7 +20,7 @@ Rules:
 
 | Path / thing | What it is |
 |---|---|
-| `~/projects/<slug>` | One git repo per project (Nuxt apps), each on the `feature` branch |
+| `~/projects/<slug>` | One git repo per project (Nuxt apps), checked out on `develop` between tasks |
 | `~/projects/CLAUDE.md` | Shared instructions for all project sessions (copy of the GitHub file, see below) |
 | `~/admin` | Your working directory and this file |
 | `~/.local/bin/claude-rc` | Start script: resumes each session's fixed conversation in bypass-permissions mode |
@@ -129,7 +129,7 @@ Sessions read it only at startup, so then restart the running project sessions t
 
 ```bash
 cd ~/projects && git clone git@github.com:brumaombra/<repo>.git
-cd <repo> && git switch feature && npm ci
+cd <repo> && git switch develop && npm ci
 systemctl --user start claude-rc@<repo>
 ```
 

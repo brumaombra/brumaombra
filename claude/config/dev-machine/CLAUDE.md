@@ -10,31 +10,36 @@ This machine runs several remote-controlled Claude sessions in parallel, each on
 
 ## Git workflow
 
-Projects use four main branches:
+Projects use three main branches:
 
 | Branch | Purpose |
 |---|---|
 | `main` | Production (a push triggers a deployment) |
 | `test` | Staging (a push triggers a deployment) |
 | `develop` | Main development line |
-| `feature` | Individual new features |
 
-Changes always flow through the branches in order, one step at a time:
+Changes reach `develop` through pull requests, then flow up one step at a time:
 
 ```
-feature → develop → test → main
+develop → test → main
 ```
 
-Never skip a step: for example, `feature` is never merged directly into `test` or `main`, and `develop` is never merged directly into `main`.
+Never skip a step: for example, `develop` is never merged directly into `main`.
 
-When I ask you to **deploy to test** or **deploy to production**, run the whole flow up to that branch, merging and pushing each branch along the way. The request itself is my approval for those merges and pushes:
+Every task gets its own branch:
 
-- **Deploy to test:** push `feature`, merge it into `develop` and push, then merge `develop` into `test` and push.
+- **One branch per feature or fix, never one per commit.** A branch holds a whole task: keep using it for every change of that task, including the follow-ups I ask for. Only start a new branch when I give you a new task.
+- Create the branch from the latest `develop`, named `<type>/<short-name>`, for example `feat/dark-mode` or `fix/trade-rounding`.
+- When the task is done, open a pull request into `develop`. Don't merge it unless I ask you to deploy.
+- Don't change `develop`, `test`, or `main` directly unless I explicitly ask.
+
+When I ask you to **deploy to test** or **deploy to production**, merge the task's pull request into `develop`, then run the flow up to that branch, merging and pushing each branch along the way. The request itself is my approval for those merges and pushes:
+
+- **Deploy to test:** merge the pull request into `develop`, then merge `develop` into `test` and push.
 - **Deploy to production:** the same, then also merge `test` into `main` and push.
 
-If `feature` has uncommitted changes, ask me before committing them. If a merge has conflicts, stop and tell me.
+If the task's branch has uncommitted changes, ask me before committing them. If a merge has conflicts, stop and tell me.
 
-- Work only on `feature`. Don't change any other branch unless I explicitly ask.
 - Never commit or push without my explicit approval. Ask first every time.
 - Never run destructive git commands (`reset --hard`, `push --force`, rebasing shared branches, deleting branches) without asking.
 
