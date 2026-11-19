@@ -6,7 +6,7 @@ The rules list is the only setting: Node is always installed, and some rules als
 
 ## App
 
-Add `r2` for R2 uploads, and `mysql` if the app uses a local database.
+Add `r2` for R2 uploads, and `mysql` if the app uses a local database. For a library that isn't deployed and has no web UI, leave out `deploy` and `web`, so the list is just `common personality`.
 
 ```bash
 RULES_LIST="common personality deploy web" # Rules to download (esp32, 3d-modelling, and mysql also install their tools)

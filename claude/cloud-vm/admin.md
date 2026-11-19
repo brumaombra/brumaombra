@@ -13,7 +13,6 @@ You are the admin of all my apps: every repository in this session is one of the
 
 ## Git
 
-- An alignment task uses the same branch name in every repository it touches, with one pull request per repository into `develop`.
 - Never deploy, and never merge a pull request or push to `develop`, `test`, or `main`: I merge the pull requests myself.
 - If your branch conflicts with `develop`, update it from `develop` and resolve the conflicts if you can, keeping both your changes and the other side's. If you can't resolve them safely, tell me: another agent is probably working on the same files.
 
