@@ -29,13 +29,13 @@ Never skip a step: for example, `develop` is never merged directly into `main`.
 Every task gets its own branch:
 
 - **One branch per feature or fix, never one per commit.** A branch holds a whole task: keep using it for every change of that task, including the follow-ups I ask for. Only start a new branch when I give you a new task.
-- Create the branch from the latest `develop`, named `<type>/<short-name>`, for example `feat/dark-mode` or `fix/trade-rounding`.
-- When the task is done, open a pull request into `develop`. Don't merge it unless I ask you to deploy.
+- Create the branch from the latest `develop`.
+- When the task is done, open a pull request into `develop`. Don't merge it unless I ask. When you merge a pull request, delete its branch right after, both on GitHub and locally.
 - Don't change `develop`, `test`, or `main` directly unless I explicitly ask.
 
-When I ask you to **deploy to test** or **deploy to production**, merge the task's pull request into `develop`, then run the flow up to that branch, merging and pushing each branch along the way. The request itself is my approval for those merges and pushes:
+When I ask you to **deploy to test** or **deploy to production**, deploy what's already on `develop`, without merging any pull request into it: run the flow up to that branch, merging and pushing each branch along the way. The request itself is my approval for those merges and pushes:
 
-- **Deploy to test:** merge the pull request into `develop`, then merge `develop` into `test` and push.
+- **Deploy to test:** merge `develop` into `test` and push.
 - **Deploy to production:** the same, then also merge `test` into `main` and push.
 
 If the task's branch has uncommitted changes, ask me before committing them. If a merge has conflicts, stop and tell me.

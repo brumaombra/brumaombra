@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
-# What each preset is for: README.md
+# See README.md for what each preset does
 
 # --------- Configuration ---------
 

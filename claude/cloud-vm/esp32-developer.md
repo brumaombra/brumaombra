@@ -29,6 +29,6 @@ The setup script installs PlatformIO (`pio`), but no board is connected to this 
 ## Git
 
 - When I ask you to deploy the project or release a new version of it, the request itself is my approval for the merges and pushes it needs:
-  - **Release:** merge the task's pull request into `develop`, then run the branch flow up to `main`, merging and pushing each branch along the way.
+  - **Release:** release what's already on `develop`, without merging any pull request into it: run the branch flow up to `main`, merging and pushing each branch along the way.
   - **Deploy:** follow the deployment rules.
 - If a pull or a merge has conflicts, stop and tell me.

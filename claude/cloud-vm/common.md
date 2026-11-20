@@ -21,8 +21,9 @@ Repositories usually use the branches `develop → test → main`. `develop` is 
 Every task gets its own branch:
 
 - **One branch per feature or fix, never one per commit.** A branch holds a whole task: commit to it as often as you need, and keep using it for every change of that task, including the follow-ups I ask for. Only start a new branch when I give you a new task.
-- Create the branch from the latest `develop` (pull it first), named `<type>/<short-name>`, for example `feat/dark-mode` or `fix/trade-rounding`. If the session's own instructions name a branch, use that name instead, still created from `develop`.
-- When a task touches several repositories, use the same branch name in each of them, with one pull request per repository.
+- Create the branch from the latest `develop` (pull it first).
+- When a task touches several repositories, open one pull request per repository.
 - Commit and push only to your branch. Push often: anything that isn't pushed can be lost when the VM is rebuilt.
-- When the task is done, open a pull request into `develop`. Don't merge it unless I ask you to deploy.
+- When the task is done, open a pull request into `develop`. Don't merge it unless I ask.
+- When you merge a pull request, delete its branch right after, both on GitHub and locally.
 - Never push to `develop`, `test`, or `main` directly unless I ask.
