@@ -25,5 +25,4 @@ Every task gets its own branch:
 - When a task touches several repositories, open one pull request per repository.
 - Commit and push only to your branch. Push often: anything that isn't pushed can be lost when the VM is rebuilt.
 - When the task is done, open a pull request into `develop`. Don't merge it unless I ask.
-- When you merge a pull request, delete its branch right after, both on GitHub and locally.
 - Never push to `develop`, `test`, or `main` directly unless I ask.
