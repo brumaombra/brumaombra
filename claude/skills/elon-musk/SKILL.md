@@ -1,6 +1,6 @@
 ---
 name: elon-musk
-description: 'Find everything a codebase can live without or simplify, following Musk''s "the best part is no part" philosophy. Use when asked to simplify, slim down, cut bloat, remove dead code, or reduce complexity. Not for security audits or performance tuning.'
+description: 'Find everything a codebase can live without, simplify, untangle, or centralize, following Musk''s "the best part is no part" philosophy. Use when asked to simplify, slim down, cut bloat, remove dead code, untangle spaghetti code, deduplicate logic, or reduce complexity. Not for security audits or performance tuning.'
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
@@ -16,7 +16,7 @@ Apply Musk's algorithm in this order. Never skip ahead: optimizing something tha
 
 1. **Question every requirement.** Each feature, setting, and edge case was added by someone for a reason that may no longer hold. Ask who needs it and what breaks without it. "We've always had it" is not a reason.
 2. **Delete.** Remove parts and processes before improving them. If you never have to add anything back, you weren't aggressive enough: aim for a list where a few items get rejected.
-3. **Simplify.** Only what survives deletion gets simplified: fewer layers, fewer files, fewer branches, fewer options.
+3. **Simplify.** Only what survives deletion gets simplified: fewer layers, fewer files, fewer branches, fewer options, fewer tangled connections, and one copy of each piece of logic.
 4. **Speed up and automate last.** Mention slow builds or manual steps only after the first three steps, and only if they still matter.
 
 ## Rules
@@ -32,7 +32,7 @@ Apply Musk's algorithm in this order. Never skip ahead: optimizing something tha
 1. **Map the app.** Read the README, the entry points, routes, pages, API handlers, data model, `package.json` (or the equivalent), config files, and CI workflows. List the features and how they connect. For big codebases, split the review by area and run the areas in parallel subagents.
 2. **Question the requirements.** For each feature, write down who it serves and what would happen without it. Flag the ones that look unused, half-finished, duplicated, or built for a case that never happened.
 3. **Hunt for parts to delete**, using the checklist below.
-4. **Hunt for simplifications** in what's left.
+4. **Hunt for simplifications** in what's left: untangle the spaghetti, and centralize the logic that's repeated.
 5. **Verify each candidate**: search its references, check how it's reached, and look at its git history when it helps (why it was added, when it was last touched).
 6. **Report** in the output format below, then wait for my choices.
 
@@ -48,11 +48,20 @@ Apply Musk's algorithm in this order. Never skip ahead: optimizing something tha
 
 ### Simplify
 - **Abstractions:** wrappers, helpers, and layers with a single caller, or that only pass data through; generic code with one real use; options and parameters nobody ever passes.
-- **Duplication:** the same logic in several places that can live in one.
 - **Reinvented wheels:** custom code for something the framework or the platform already does.
 - **Control flow:** deep nesting, long conditionals, and state that can be derived instead of stored.
-- **Structure:** one feature spread over many tiny files, or folders with a single file.
+- **Structure:** folders with a single file.
 
+### Untangle the spaghetti
+Keep the modules separated: each area of the app (a feature, an entity, a layer) lives in its own module with a clear boundary, and talks to the others only through what they export. The goal is a few well-separated modules, not a file for each micro-feature: splitting too much is spaghetti too.
+- **Modules mixed together:** code of one area living inside another (market logic in the users module, UI logic in the data layer), and "god" files that hold several unrelated areas everything depends on. Move each piece to the module it belongs to.
+- **Boundaries crossed:** code that skips the project's layers or reaches into another module's internals instead of its exports.
+- **Circular and hidden dependencies:** modules that import each other, and modules that talk through shared mutable state, globals, or events instead of plain function calls.
+- **Over-splitting:** one module chopped into many tiny files, so following a feature means jumping across all of them. Merge them back into one module.
+
+### Centralize
+- **Repeated logic:** the same logic (validation, formatting, calculations, constants, types, API calls) copied or rewritten in several places, even with small differences. Propose one shared version, and list every copy it replaces.
+- **Shared by frontend and backend:** in a Nuxt app, logic that both the app and the server need belongs in `shared/` (for example `shared/utils/`), so both sides use the same code, like the same price calculation in the UI preview and in the API. Code in `shared/` can't use Vue or Nitro APIs: keep it pure.
 ## Output
 
 **1. Verdict:** one or two sentences on how lean the app is and where the biggest win is.
@@ -71,7 +80,7 @@ Apply Musk's algorithm in this order. Never skip ahead: optimizing something tha
 **Confidence**: High | Medium | Low
 ```
 
-**4. Simplifications**, in the same format, with a short before and after sketch for each one.
+**4. Simplifications**, including the tangles to untangle and the logic to centralize, in the same format, with a short before and after sketch for each one.
 
 **5. Plan:** the order you'd apply them in, starting with the highest-confidence, lowest-risk deletions.
 
