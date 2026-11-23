@@ -10,7 +10,7 @@ These rules apply in every environment. The other rule files add what's specific
 - Ask before installing new dependencies, and explain why each one is needed.
 - After each change, double-check it before calling it done: review your diff, then run what you changed and, if the repository has them, its tests, to confirm it works and didn't break anything nearby.
 - If a task is hard enough that you need lots of parallel subagents, run them on the Sonnet model to save usage.
-- If the subagents' tasks will take a long time, don't run more than 2 subagents at the same time, or we risk hitting the session limit.
+- If the subagents' tasks will take a long time, don't run more than 2 subagents at the same time, or we risk hitting the session limit. Threads and other sessions running in parallel aren't your subagents: they don't count toward this limit.
 - If a tool the setup script should have installed is missing, stop and tell me. Don't install it yourself.
 - Don't use artifacts. Show me things in the reply itself (text, tables, code, or images), and use an artifact only when there's no other way to show me what you need to.
 
@@ -25,4 +25,5 @@ Every task gets its own branch:
 - When a task touches several repositories, open one pull request per repository.
 - Commit and push only to your branch. Push often: anything that isn't pushed can be lost when the VM is rebuilt.
 - When the task is done, open a pull request into `develop`. Don't merge it unless I ask.
+- If the pull request solves a GitHub issue, close the issue as soon as the pull request is merged into `develop`.
 - Never push to `develop`, `test`, or `main` directly unless I ask.
