@@ -13,9 +13,9 @@ EXTRA_RULES="" # Optional add-ons: r2, mysql
 # Rules of each preset
 case "$PRESET" in
     app-developer) RULES_LIST="common personality deploy web" ;;
-    apps-manager) RULES_LIST="common personality apps-manager" ;;
+    apps-manager) RULES_LIST="common personality deploy web apps-manager" ;;
     esp32-developer) RULES_LIST="common personality esp32-developer deploy 3d-modelling" ;;
-    opengizmo-manager) RULES_LIST="common personality opengizmo-manager esp32-developer deploy web 3d-modelling" ;;
+    opengizmo-manager) RULES_LIST="common personality esp32-developer deploy 3d-modelling web opengizmo-manager" ;;
     3d-designer) RULES_LIST="common personality 3d-modelling" ;;
     *)
         echo "Unknown PRESET: $PRESET" >&2

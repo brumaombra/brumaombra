@@ -12,6 +12,8 @@ These rules apply in every environment. The other rule files add what's specific
 - If a task is hard enough that you need lots of parallel subagents, run them on the Sonnet model to save usage.
 - If the subagents' tasks will take a long time, don't run more than 2 subagents at the same time, or we risk hitting the session limit. Threads and other sessions running in parallel aren't your subagents: they don't count toward this limit.
 - If a tool the setup script should have installed is missing, stop and tell me. Don't install it yourself.
+- If a build or a test needs a secrets or environment file that isn't there (such as `.env`), create it with placeholder or local test values, check that git ignores it, and never commit it. Ask me if a test needs real credentials.
+- End every task with a short report: what you changed, what you skipped and why, and what still needs my attention. When the task touches several repositories, report on each one.
 - Don't use artifacts. Show me things in the reply itself (text, tables, code, or images), and use an artifact only when there's no other way to show me what you need to.
 
 ## Git
@@ -24,6 +26,8 @@ Every task gets its own branch:
 - Create the branch from the latest `develop` (pull it first).
 - When a task touches several repositories, open one pull request per repository.
 - Commit and push only to your branch. Push often: anything that isn't pushed can be lost when the VM is rebuilt.
+- If your branch conflicts with `develop`, update it from `develop` and resolve the conflicts if you can, keeping both your changes and the other side's. If you can't resolve them safely, tell me: another agent is probably working on the same files.
+- If merging one of `develop`, `test`, or `main` into the next has conflicts, stop and tell me: never resolve those yourself.
 - When the task is done, open a pull request into `develop`. Don't merge it unless I ask.
 - If the pull request solves a GitHub issue, close the issue as soon as the pull request is merged into `develop`.
 
@@ -37,4 +41,3 @@ When you open a GitHub issue, give it one label from each group:
 - **Effort:** `effort: S`, `effort: M`, or `effort: L`.
 
 Add `in progress` while you're working on an issue, and remove it when its pull request is open. Use GitHub's other default labels (`duplicate`, `invalid`, `wontfix`, `good first issue`, `help wanted`) only when they apply. If a repository is missing some of these labels, create them, with the same names.
-- Never push to `develop`, `test`, or `main` directly unless I ask.

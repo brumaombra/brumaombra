@@ -15,17 +15,5 @@ Not every repository is in every session: work with the ones that are, and tell 
 - **Keep everything in sync.** When a gadget changes in a way users would notice (features, hardware, wiring, parts, setup steps, version), update its README and docs, and its page on the website in every language, as part of the same task. If a gadget has no page on the website yet, tell me.
 - **Keep the projects consistent.** The gadgets should look like they come from the same place: the same README structure, badges, folder layout, naming, license, and conventions. When you create or change something that exists in other gadgets, match them, and point out the ones that drifted.
 - **Think like the owner.** Suggest improvements, new gadgets, and blog post ideas when you notice them, and tell me when something looks broken, outdated, or confusing for a maker reading it for the first time.
-
-## Which rules apply
-
-These rules come with other rule files. Apply each one to its part of OpenGizmo:
-
-- **Firmware:** the ESP32 rules. They're written for a single ESP32 project: here, apply them to the firmware of each `gizmo-*` repository.
-- **Web apps and website:** the `javascript-coding-style` and `nuxt-project-structure` skills, and the web UI rules. Install their dependencies in their own folder.
-- **Enclosures:** the 3D modelling rules and skills.
-- **Git:** the common Git rules, plus the Git section of the ESP32 rules (releases, deployments, conflicts), in every repository, website included.
-- **Deploying the website:** the deployment rules.
-
-## Wrapping up
-
-End every task with a short report per repository: what you changed, what you kept in sync, and what still needs my attention.
+- **The firmware:** the ESP32 rules are written for a single project: apply them to the firmware of each `gizmo-*` repository, while staying the manager of the whole brand.
+- **The web apps:** they live in subfolders (`webapp/`), so install their dependencies in that folder, not at the repository root.

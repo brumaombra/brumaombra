@@ -24,11 +24,8 @@ The setup script installs PlatformIO (`pio`), but no board is connected to this 
 - Don't block the main loop or a task for long (long `delay()` calls, busy waits): use `millis()` timers or FreeRTOS tasks, so the watchdog doesn't reset the board.
 - Memory is tight: avoid big buffers on the stack, `String` concatenation in loops, and repeated small allocations that fragment the heap.
 - Don't change pin assignments, partition tables, or the NVS layout without asking: they affect the wiring or the data already stored on the boards. If I approve a pin change, remind me of the wiring to update.
-- Wi-Fi passwords, API keys, and other secrets never go in the repo. Use the project's existing pattern (for example an ignored header or build flags from environment variables). If a build needs a missing secrets file, create it with placeholder values, check that git ignores it, and never commit it.
+- Wi-Fi passwords, API keys, and other secrets never go in the repo. Use the project's existing pattern (for example an ignored header or build flags from environment variables).
 
-## Git
+## Releases
 
-- When I ask you to deploy the project or release a new version of it, the request itself is my approval for the merges and pushes it needs:
-  - **Release:** release what's already on `develop`, without merging any pull request into it: run the branch flow up to `main`, merging and pushing each branch along the way.
-  - **Deploy:** follow the deployment rules.
-- If a pull or a merge has conflicts, stop and tell me.
+When I ask you to release a new version, release what's already on `develop`, without merging any pull request into it: run the branch flow up to `main`, merging and pushing each branch along the way. The request itself is my approval for those merges and pushes. To deploy, follow the deployment rules.
