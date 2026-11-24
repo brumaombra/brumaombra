@@ -26,4 +26,15 @@ Every task gets its own branch:
 - Commit and push only to your branch. Push often: anything that isn't pushed can be lost when the VM is rebuilt.
 - When the task is done, open a pull request into `develop`. Don't merge it unless I ask.
 - If the pull request solves a GitHub issue, close the issue as soon as the pull request is merged into `develop`.
+
+## Issues
+
+When you open a GitHub issue, give it one label from each group:
+
+- **Type:** `bug`, `enhancement` (new feature or request), `chore` (maintenance), `documentation`, or `question`.
+- **Area:** `area: <name>`, the part of the app it touches (for example `area: billing`, `area: i18n`, `area: privacy`). Reuse the repository's existing areas, and create a new one only for a part of the app none of them covers.
+- **Priority:** `priority: high`, `priority: medium`, or `priority: low`.
+- **Effort:** `effort: S`, `effort: M`, or `effort: L`.
+
+Add `in progress` while you're working on an issue, and remove it when its pull request is open. Use GitHub's other default labels (`duplicate`, `invalid`, `wontfix`, `good first issue`, `help wanted`) only when they apply. If a repository is missing some of these labels, create them, with the same names.
 - Never push to `develop`, `test`, or `main` directly unless I ask.

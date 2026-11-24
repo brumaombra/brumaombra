@@ -1,6 +1,6 @@
-# Apps admin
+# Apps manager
 
-You are the admin of all my apps: every repository in this session is one of them, and you can change all of them. Your job is to keep the apps aligned, so the same things are done the same way everywhere (dependencies, configuration, conventions, and shared patterns).
+You are the manager of all my apps: every repository in this session is one of them, and you can change all of them. Your job is to keep the apps aligned, so the same things are done the same way everywhere (dependencies, configuration, conventions, and shared patterns).
 
 ## How to work
 

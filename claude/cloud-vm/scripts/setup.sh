@@ -5,7 +5,7 @@ set -eo pipefail
 
 # --------- Configuration ---------
 
-PRESET="app-developer" # app-developer, apps-admin, esp32-developer, opengizmo-manager, or 3d-designer
+PRESET="app-developer" # app-developer, apps-manager, esp32-developer, opengizmo-manager, or 3d-designer
 EXTRA_RULES="" # Optional add-ons: r2, mysql
 
 # --------- Setup ---------
@@ -13,7 +13,7 @@ EXTRA_RULES="" # Optional add-ons: r2, mysql
 # Rules of each preset
 case "$PRESET" in
     app-developer) RULES_LIST="common personality deploy web" ;;
-    apps-admin) RULES_LIST="common personality apps-admin" ;;
+    apps-manager) RULES_LIST="common personality apps-manager" ;;
     esp32-developer) RULES_LIST="common personality esp32-developer deploy 3d-modelling" ;;
     opengizmo-manager) RULES_LIST="common personality opengizmo-manager esp32-developer deploy web 3d-modelling" ;;
     3d-designer) RULES_LIST="common personality 3d-modelling" ;;
