@@ -1,6 +1,6 @@
 ---
-name: security-audit-nuxt
-description: 'Security audit for Nuxt apps. Use when asked to audit, security-review, pentest, harden, or find vulnerabilities in a Nuxt project.'
+name: "security-audit-nuxt"
+description: "Security audit for Nuxt apps. Use when asked to audit, security-review, pentest, harden, or find vulnerabilities in a Nuxt project."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

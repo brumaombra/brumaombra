@@ -1,6 +1,6 @@
 ---
-name: javascript-coding-style
-description: 'Personal JavaScript and TypeScript coding style. Use whenever writing, editing, refactoring, or reviewing JavaScript or TypeScript code.'
+name: "javascript-coding-style"
+description: "Personal JavaScript and TypeScript coding style. Use whenever writing, editing, refactoring, or reviewing JavaScript or TypeScript code."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

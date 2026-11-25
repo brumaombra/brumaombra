@@ -1,6 +1,6 @@
 ---
-name: blog-writing-style
-description: 'Writing style for general blog posts: explainers, opinion pieces, analyses, and practical articles. Use when drafting, rewriting, or reviewing blog post prose. For technical how-to guides and tutorials, use guide-writing-style instead.'
+name: "blog-writing-style"
+description: "Writing style for general blog posts: explainers, opinion pieces, analyses, and practical articles. Use when drafting, rewriting, or reviewing blog post prose. For technical how-to guides and tutorials, use guide-writing-style instead."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

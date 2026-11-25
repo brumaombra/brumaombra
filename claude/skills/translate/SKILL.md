@@ -1,6 +1,6 @@
 ---
-name: translate
-description: 'Translation and localization between any languages. Use when asked to translate or localize content (locale files, UI strings, blog posts, marketing copy, emails, legal text), add a new language, sync missing keys across locale files, or create the translated version of a page or post.'
+name: "translate"
+description: "Translation and localization between any languages. Use when asked to translate or localize content (locale files, UI strings, blog posts, marketing copy, emails, legal text), add a new language, sync missing keys across locale files, or create the translated version of a page or post."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

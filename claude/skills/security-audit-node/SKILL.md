@@ -1,6 +1,6 @@
 ---
-name: security-audit-node
-description: 'Security audit for Node.js and JavaScript backends (Express, Fastify, Koa, Nitro, workers, CLIs). Use when asked to audit, security-review, pentest, harden, or find vulnerabilities in Node.js code, or before shipping auth, payments, uploads, webhooks, or LLM features. For Nuxt apps, use security-audit-nuxt.'
+name: "security-audit-node"
+description: "Security audit for Node.js and JavaScript backends (Express, Fastify, Koa, Nitro, workers, CLIs). Use when asked to audit, security-review, pentest, harden, or find vulnerabilities in Node.js code, or before shipping auth, payments, uploads, webhooks, or LLM features. For Nuxt apps, use security-audit-nuxt."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

@@ -1,6 +1,6 @@
 ---
-name: seo-geo-audit
-description: 'SEO and GEO (Generative Engine Optimization) audit of a website and its content. Use when asked for an SEO or GEO audit or review, when pages don''t rank, get indexed, or get cited by AI answer engines, or before launching a site, a blog, or a new language version.'
+name: "seo-geo-audit"
+description: "SEO and GEO (Generative Engine Optimization) audit of a website and its content. Use when asked for an SEO or GEO audit or review, when pages don't rank, get indexed, or get cited by AI answer engines, or before launching a site, a blog, or a new language version."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

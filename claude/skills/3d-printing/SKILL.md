@@ -1,6 +1,6 @@
 ---
-name: 3d-printing
-description: 'Design-for-printing rules and printer setup for parts printed on my Bambu Lab A1. Use when designing or checking a part that will be 3D printed, choosing clearances, walls, orientation, materials, screws or how a board is held, or picking print settings. For building the FreeCAD model itself, use 3d-modelling too.'
+name: "3d-printing"
+description: "Design-for-printing rules and printer setup for parts printed on my Bambu Lab A1. Use when designing or checking a part that will be 3D printed, choosing clearances, walls, orientation, materials, screws or how a board is held, or picking print settings. For building the FreeCAD model itself, use 3d-modelling too."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

@@ -1,6 +1,6 @@
 ---
-name: guide-writing-style
-description: 'Writing style for technical how-to guides, tutorials, and step-by-step walkthroughs. Use when drafting, rewriting, or reviewing guide or tutorial prose. For general blog posts, use blog-writing-style instead.'
+name: "guide-writing-style"
+description: "Writing style for technical how-to guides, tutorials, and step-by-step walkthroughs. Use when drafting, rewriting, or reviewing guide or tutorial prose. For general blog posts, use blog-writing-style instead."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

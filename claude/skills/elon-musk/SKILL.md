@@ -1,6 +1,6 @@
 ---
-name: elon-musk
-description: 'Find everything a codebase can live without, simplify, untangle, or centralize, following Musk''s "the best part is no part" philosophy. Use when asked to simplify, slim down, cut bloat, remove dead code, untangle spaghetti code, deduplicate logic, or reduce complexity. Not for security audits or performance tuning.'
+name: "elon-musk"
+description: "Find everything a codebase can live without, simplify, untangle, or centralize, following Musk's 'the best part is no part' philosophy. Use when asked to simplify, slim down, cut bloat, remove dead code, untangle spaghetti code, deduplicate logic, or reduce complexity. Not for security audits or performance tuning."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com

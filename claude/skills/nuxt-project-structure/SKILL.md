@@ -1,6 +1,6 @@
 ---
-name: nuxt-project-structure
-description: 'Project conventions for full-stack Nuxt apps. Use whenever adding a feature, creating or editing files, writing tests, or refactoring in a Nuxt project: pages, components, stores, API endpoints, DB functions, migrations, or nuxt.config.ts.'
+name: "nuxt-project-structure"
+description: "Project conventions for full-stack Nuxt apps. Use whenever adding a feature, creating or editing files, writing tests, or refactoring in a Nuxt project: pages, components, stores, API endpoints, DB functions, migrations, or nuxt.config.ts."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
@@ -22,7 +22,7 @@ Conventions for Nuxt + Nitro apps built on Knex, Zod, and Firebase Auth. For gen
 | State | `useState` stores (never Pinia or Vuex) |
 | Database | MySQL via Knex.js, migrations in `server/db/migrations/` |
 | Auth | Server-side Google OAuth + Firebase Auth session cookies (Firebase Admin SDK, no Firebase client SDK) |
-| Validation | Zod in `server/utils/objectsSchemas.js` |
+| Validation | Zod 4 API (`zod/v4`): shared schemas in `shared/utils/schemas.js` when the project has it, server-only ones in `server/utils/objectsSchemas.js` |
 | Icons | Hugeicons (`@hugeicons/core-free-icons`, `@hugeicons/vue`), never FontAwesome |
 | Errors | Sentry via `server/sentry/instrument.js` |
 | i18n | `@nuxtjs/i18n`, one JSON file per locale in `i18n/locales/` |
@@ -64,7 +64,7 @@ server/
   sse/                     # Server-sent events connection registries
   tasks/                   # Nitro scheduled tasks
   utils/                   # i18n.js, objectsSchemas.js, utils.js
-shared/utils/              # Code used by both app and server (redirects.js: readSafeRedirectPath)
+shared/utils/              # Code used by both app and server (redirects.js: readSafeRedirectPath; schemas.js: shared Zod schemas, where present)
 tests/
   app/                     # Components, middleware, composables, locales (Nuxt environment)
   server/                  # DB functions, handlers, middleware, SSE, tasks (Node environment)
@@ -306,7 +306,17 @@ export const createMarket = async ({ userId, marketData, lang = 'en' }) => {
 
 ### Validation (Zod)
 
-All schemas and validators live in `server/utils/objectsSchemas.js`, one `validateXSchema({ xData, lang = 'en' })` per entity. Each one throws a 400 `createError` with a translated message on failure and returns the parsed data. Extend the existing file in its own style. Don't refactor older validators to a new signature during a focused change.
+Write schemas with the Zod 4 API (`import { z } from 'zod/v4'`).
+
+**Projects with `shared/utils/schemas.js`** (for example Bruma Surveys) keep one rule per field there, used by the app, the API and the MCP tools alike:
+
+- `shared/utils/schemas.js` holds the Zod schemas of everything the app edits, plus their enums and limits. It stays pure (no Vue, no Nitro). Its error messages are locale keys (`errors.<entity>.<problem>`, with `{min}` / `{max}` placeholders read from the issue by `readIssueParams`); add each new key to every locale file.
+- Enums and limits the light pages need live without Zod in `shared/utils/validationRules.js` (re-exported by `schemas.js`). Never import `schemas.js` or Zod from a public page such as the survey page: its answer checks are plain functions in `shared/utils/answerChecks.js`.
+- `server/utils/objectsSchemas.js` holds only `parseSchema`, the `validateXSchema` wrappers that call it with the shared schemas, and the server-only schemas (OAuth, push subscriptions, the response wrapper). `parseSchema` translates a locale-key message with `t(lang)`.
+- Editors check with `schema.safeParse()` and map each issue's `path` to its field; selects and `maxlength` read the shared enums and limits. MCP tools build their arguments from the shared schemas (`.pick`, `.extend`, `.describe`) instead of retyping limits.
+- Don't move a shared schema back into `objectsSchemas.js`, and don't retype a limit or an enum in a component.
+
+**Other projects** keep all schemas and validators in `server/utils/objectsSchemas.js`, one `validateXSchema({ xData, lang = 'en' })` per entity. Each one throws a 400 `createError` with a translated message on failure and returns the parsed data. Extend the existing file in its own style. Don't refactor older validators to a new signature during a focused change.
 
 ### Errors
 
@@ -427,7 +437,7 @@ Work through the layers in this order, skipping those the feature doesn't touch:
 5. `server/api/`: the endpoint, with auth and error handling.
 6. `server/db/`: persistence, transactions, and ownership checks.
 7. A migration if the schema changes.
-8. `server/utils/objectsSchemas.js`: validation.
+8. Validation: `shared/utils/schemas.js` for what the app edits (where the project has it), `server/utils/objectsSchemas.js` for server-only input.
 9. `i18n/locales/`: keys in every locale.
 10. `tests/`: cover the new behavior (DB functions against SQLite, handlers, components), and update `tests/helpers/database.js` if the schema changed.
 11. Check the touched files with editor diagnostics and run `npm test`.

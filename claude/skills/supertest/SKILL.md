@@ -1,6 +1,6 @@
 ---
-name: supertest
-description: 'Manual, user-like testing of a whole app with parallel subagents, from common cases to extreme edge cases. Use when asked to supertest, test everything, stress-test, battle-test, or find as many bugs as possible before a release. Not for writing automated test suites, and not the supertest npm library.'
+name: "supertest"
+description: "Manual, user-like testing of a whole app with parallel subagents, from common cases to extreme edge cases. Use when asked to supertest, test everything, stress-test, battle-test, or find as many bugs as possible before a release. Not for writing automated test suites, and not the supertest npm library."
 metadata:
   author: Mauro Brambilla
   author-url: https://brumaombra.com
