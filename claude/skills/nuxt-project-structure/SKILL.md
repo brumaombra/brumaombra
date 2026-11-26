@@ -21,7 +21,7 @@ Conventions for Nuxt + Nitro apps built on Knex, Zod, and Firebase Auth. For gen
 | Styling | Tailwind CSS 4 via `@tailwindcss/vite`, CSS variables in `app/assets/css/main.css` |
 | State | `useState` stores (never Pinia or Vuex) |
 | Database | MySQL via Knex.js, migrations in `server/db/migrations/` |
-| Auth | Server-side Google OAuth + Firebase Auth session cookies (Firebase Admin SDK, no Firebase client SDK) |
+| Auth | Server-side Google OAuth + Firebase Auth session cookies, from the `auth` feature of the shared layer `@brumaombra/nuxt-base` (no Firebase client SDK) |
 | Validation | Zod 4 API (`zod/v4`): shared schemas in `shared/utils/schemas.js` when the project has it, server-only ones in `server/utils/objectsSchemas.js` |
 | Icons | Hugeicons (`@hugeicons/core-free-icons`, `@hugeicons/vue`), never FontAwesome |
 | Errors | Sentry via `server/sentry/instrument.js` |
@@ -51,20 +51,17 @@ app/
 content/                   # Markdown (blog/, <locale>/blog/)
 i18n/locales/              # en.json, it.json, ...
 server/
-  api/                     # Nitro route handlers
-    auth/                  # google.get.js, callback/google.get.js, logout.post.js
-  auth/                    # googleOAuth.js (OAuth + Firebase sign-in), accounts.js (app user on first sign-in)
+  api/                     # Nitro route handlers (the sign-in routes come from the layer)
+  auth/                    # app.js (the users the layer's sign-in reads and creates), accounts.js (app user on first sign-in)
   db/
     config/                # connection.js (getKnex)
     migrations/
     <entity>.js            # One module per entity (markets.js, users.js)
-  firebase/firebaseAdmin.js # Admin SDK, session cookie, getCurrentUser(event)
   middleware/security.js   # Runs on every request
-  sentry/instrument.js
   sse/                     # Server-sent events connection registries
   tasks/                   # Nitro scheduled tasks
   utils/                   # i18n.js, objectsSchemas.js, utils.js
-shared/utils/              # Code used by both app and server (redirects.js: readSafeRedirectPath; schemas.js: shared Zod schemas, where present)
+shared/utils/              # Code used by both app and server (schemas.js: shared Zod schemas, where present)
 tests/
   app/                     # Components, middleware, composables, locales (Nuxt environment)
   server/                  # DB functions, handlers, middleware, SSE, tasks (Node environment)
@@ -214,43 +211,37 @@ Components in `app/components/content/` are used inside Markdown. Blog prose sty
 
 File names follow Nitro method routing: `index.get.js`, `index.post.js`, `[id]/index.get.js`, `[id]/index.put.js`, `[id]/index.delete.js`, and action routes like `[id]/cancel.post.js`. Keep the naming style already used in the folder.
 
+Every handler is a `defineApiHandler` from the shared layer: it reads the user, picks the language of the messages and reports the errors, so the handler holds only its own work.
+
 ```js
-import { getCurrentUser } from '~~/server/firebase/firebaseAdmin.js';
-import { cancelMarket } from '~~/server/db/markets.js';
-import { handleNuxtErrorMessages } from '~~/server/sentry/instrument.js';
+import { defineApiHandler } from '@brumaombra/nuxt-base/server/api';
+import { cancelMarketAndNotify } from '~~/server/utils/marketActions.js';
 import { t } from '~~/server/utils/i18n.js';
 
-export default defineEventHandler(async event => {
-	let lang = 'en';
-
-	try {
-		// Verify user is authenticated
-		const user = await getCurrentUser(event);
-		if (!user) {
-			throw createError({
-				statusCode: 401,
-				statusMessage: 'unauthorized',
-				message: t(lang, 'server.error.unauthorized')
-			});
-		}
-
-		// Get the language from the user profile
-		lang = user.language || lang;
-
-		// Get the market ID from the route parameters
-		const marketId = getRouterParam(event, 'id');
-
-		// Cancel the market (ownership is checked in the DB layer)
-		return await cancelMarket({ marketId, userId: user.id, lang });
-	} catch (error) {
-		handleNuxtErrorMessages({ error, errorTranslated: t(lang, 'server.error.cancelingMarket'), errorMessage: 'Error canceling market' });
+export default defineApiHandler({ auth: 'required', errorKey: 'server.error.cancelingMarket', errorMessage: 'Error canceling market' }, async ({ event, user, lang }) => {
+	// Get the market ID from the route parameters
+	const marketId = getRouterParam(event, 'id');
+	if (!marketId) {
+		throw createError({
+			statusCode: 400,
+			statusMessage: 'missing_market_id',
+			message: t(lang, 'server.error.missingMarketId')
+		});
 	}
+
+	// Cancel the market (ownership is checked in the DB layer)
+	return await cancelMarketAndNotify({ marketId, userId: user.id, lang });
 });
 ```
 
-- Every handler that touches user data calls `getCurrentUser(event)` first. Protected ones throw a 401 when there is no user; handlers open to visitors start with `let lang = readLanguageFromRequest(event)` and then use `user?.language || lang`.
+- `auth`: `'required'` for the endpoints of signed-in users (401 without a session), `'optional'` for the ones open to visitors that show more to a signed-in user (`user` is null for a visitor), and nothing (`false`) for the ones that never read a user. The first two need `brumaBase.auth`.
+- The handler gets `{ event, user, lang, params }`. `lang` is the language of the user, otherwise the one of the request (`?lang=` or the browser).
+- Errors: throw `createError` with a translated message for the expected ones (400, 403, 404, 429): they reach the client as they are, and aren't reported. Anything else goes to Sentry as `errorMessage` and answers a 500 with the translated `errorKey`. Never write the `try / catch` yourself.
+- Validation stays in the handler, with the project's validators (they throw translated 400s in `lang`).
 - Handlers never call Knex. They read input and delegate to a `server/db/` function.
-- The whole body goes in `try / catch` with `handleNuxtErrorMessages()`.
+- A project can build its own wrapper on top, for checks every endpoint of an area repeats (Bruma Surveys' `defineUserHandler` adds the workspace, role and ownership checks). Use it where the project has one.
+- Write a plain `defineEventHandler` only when the wrapper can't express the endpoint: a `catch` that has to undo something (like giving back rate-limit points), an error key that depends on the request, a check that must run before reading the user, a stream (SSE), a webhook, or a redirect.
+- Sign-in: the layer's `auth` feature owns the Google sign-in, the session and the logout. Read the user with `getCurrentUser(event)` or `requireCurrentUser({ event, lang })` from `@brumaombra/nuxt-base/server/auth` only outside an API handler. In server tests, mock that path with `createAuthMock` from `@brumaombra/nuxt-base/testing/auth`.
 
 ### DB layer (`server/db/`)
 
@@ -304,6 +295,14 @@ export const createMarket = async ({ userId, marketData, lang = 'en' }) => {
 | Updated | `updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL` |
 | Money | `DECIMAL(19,4)` |
 
+**Migrations must be safe to run twice.** MySQL 8 commits every schema change on its own, and Knex records a migration only once its `up` has finished, so a migration that stops halfway (a failing statement, a lost connection, a container killed mid-deploy) runs again from the top on the next start. Write `up` so that a second run skips what the first one already did:
+
+- Tables: `CREATE TABLE IF NOT EXISTS` and `DROP TABLE IF EXISTS`.
+- Columns, indexes and foreign keys (MySQL 8 has no `IF [NOT] EXISTS` for them): check first, with `knex.schema.hasColumn(table, column)` for a column, or a query on `information_schema.STATISTICS` (index) or `information_schema.TABLE_CONSTRAINTS` (foreign key) for the others.
+- Data changes (`UPDATE`, `INSERT`, backfills): a `WHERE` that leaves out the rows already changed.
+
+Never edit a migration that has already run in production: fix forward with a new one.
+
 ### Validation (Zod)
 
 Write schemas with the Zod 4 API (`import { z } from 'zod/v4'`).
@@ -323,10 +322,23 @@ Write schemas with the Zod 4 API (`import { z } from 'zod/v4'`).
 | Where | Helper |
 |---|---|
 | DB and server utilities | `handleError({ error, errorMessage, throwError: true })` |
-| API handlers | `handleNuxtErrorMessages({ error, errorTranslated, errorMessage })` |
+| API handlers | `defineApiHandler({ auth, errorKey, errorMessage }, handler)`, which reports for you |
 | Client catch blocks | `handleBackendErrors({ t, error, popupType, defaultMessage })` |
 
 Don't add ad hoc logging when these helpers exist.
+
+### MCP server for AI assistants (`server/mcp/`)
+
+The MCP server and its OAuth sign-in come from the `mcp` feature of the shared layer (`brumaBase.mcp`). It serves `/mcp`, `/oauth/register`, `/oauth/token`, the consent page's `/api/oauth/authorize`, the `.well-known` OAuth files and the server card. Never write OAuth or the MCP protocol by hand.
+
+- **What the app keeps:** `server/mcp/app.js` (`serverInfo`, `serverDescription`, `instructions`, `tools` and `readMcpUser`), the tools in `server/mcp/tools.js`, the consent page, the assistants list of the profile, and the migrations of the four `oauth*` tables. The layer's README lists their columns, and the startup check fails the healthcheck when one is missing.
+- **A tool** is `{ name, title, description, requiresUser, annotations, schema, run }`:
+  - `schema` is a strict Zod schema of its arguments.
+  - `run(arguments, { baseUrl, user, ...context })` returns plain data.
+  - Throw `McpToolError` from `@brumaombra/nuxt-base/server/mcp` for an answer the assistant should read (like a resource not found). Anything else is reported to Sentry and hidden from the assistant.
+  - Mark the tools that change data with `readOnlyHint: false`, and the irreversible ones with `destructiveHint: true`, so the assistant asks the user first.
+- **Something every tool needs** (like a workspace): add it with the app's `toolContext` hook. Something the user picks on the consent page goes in `readConsentConnection`, stored in the columns of `connectionColumns`. Don't fork the protocol.
+- **Tests:** mock the layer's helpers by their package path (`@brumaombra/nuxt-base/server/mcp`), and stub `useRuntimeConfig` with the app's `brumaBase.mcp` settings (see the app's `tests/helpers/mcpSettings.js`).
 
 ### Server-sent events (`server/sse/`)
 
@@ -344,9 +356,8 @@ Real-time endpoints are `realtime-updates.get.js` handlers that register the con
 const { t } = useI18n();
 const label = t('common.save');
 
-// Server side
-const lang = user?.language || readLanguageFromRequest(event);
-const message = t(lang, 'server.error.unauthorized');
+// Server side (in an API handler, lang comes with the handler)
+const message = t(lang, 'server.error.marketNotFound');
 ```
 
 Every user-facing string goes through i18n, and every new key is added to **all** locale files in the same change.
