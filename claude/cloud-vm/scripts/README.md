@@ -13,6 +13,7 @@ Each preset sets who the agent is, and downloads the rules for that role. Node i
 | `esp32-developer` | Firmware developer for my ESP32 repositories | `common esp32-developer deploy 3d-modelling` |
 | `opengizmo-manager` | Manager of the whole OpenGizmo brand | `common opengizmo-manager esp32-developer deploy web 3d-modelling` |
 | `3d-designer` | Designer of 3D parts | `common 3d-modelling` |
+| `video-creation` | Creator of videos | `common` |
 
 ## Add-ons
 
@@ -22,6 +23,6 @@ List them in `EXTRA_RULES`, separated by spaces:
 - `mysql`: the app uses a local MySQL database (installs MySQL, needs the `MYSQL_*` environment variables).
 
 ```bash
-PRESET="app-developer" # app-developer, apps-manager, esp32-developer, opengizmo-manager, or 3d-designer
+PRESET="app-developer" # app-developer, apps-manager, esp32-developer, opengizmo-manager, 3d-designer, or video-creation
 EXTRA_RULES="r2 mysql" # Optional add-ons: r2, mysql
 ```

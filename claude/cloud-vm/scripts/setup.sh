@@ -5,7 +5,7 @@ set -eo pipefail
 
 # --------- Configuration ---------
 
-PRESET="app-developer" # app-developer, apps-manager, esp32-developer, opengizmo-manager, or 3d-designer
+PRESET="app-developer" # app-developer, apps-manager, esp32-developer, opengizmo-manager, 3d-designer, or video-creation
 EXTRA_RULES="" # Optional add-ons: r2, mysql
 
 # --------- Setup ---------
@@ -17,6 +17,7 @@ case "$PRESET" in
     esp32-developer) RULES_LIST="common esp32-developer deploy 3d-modelling" ;;
     opengizmo-manager) RULES_LIST="common esp32-developer deploy 3d-modelling web opengizmo-manager" ;;
     3d-designer) RULES_LIST="common 3d-modelling" ;;
+    video-creation) RULES_LIST="common" ;;
     *)
         echo "Unknown PRESET: $PRESET" >&2
         exit 1
