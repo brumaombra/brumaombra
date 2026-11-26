@@ -104,6 +104,22 @@ if has_rule mysql; then
     fi
 fi
 
+# Kokoro TTS model (video-creator preset): tts.py reads it from /opt/kokoro (a failed download doesn't block the session)
+if [ "$PRESET" = "video-creator" ]; then
+    KOKORO_URL="https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0" # Model files location
+    KOKORO_DIR="/opt/kokoro"
+    mkdir -p "$KOKORO_DIR"
+    for file in kokoro-v1.0.onnx voices-v1.0.bin; do
+        [ -f "$KOKORO_DIR/$file" ] && continue
+        if curl -fsSL "$KOKORO_URL/$file" -o "$KOKORO_DIR/$file.part"; then
+            mv "$KOKORO_DIR/$file.part" "$KOKORO_DIR/$file"
+        else
+            rm -f "$KOKORO_DIR/$file.part"
+            echo "Could not download the Kokoro file $file"
+        fi
+    done
+fi
+
 # Claude rules for cloud sessions, replaced on every run (a failed download doesn't block the session)
 RULES_URL="https://raw.githubusercontent.com/brumaombra/brumaombra/main/claude/cloud-vm" # Rules location
 RULES_DIR="/root/.claude/rules"
