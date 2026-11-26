@@ -327,6 +327,19 @@ Write schemas with the Zod 4 API (`import { z } from 'zod/v4'`).
 
 Don't add ad hoc logging when these helpers exist.
 
+### MCP server for AI assistants (`server/mcp/`)
+
+The MCP server and its OAuth sign-in come from the `mcp` feature of the shared layer (`brumaBase.mcp`). It serves `/mcp`, `/oauth/register`, `/oauth/token`, the consent page's `/api/oauth/authorize`, the `.well-known` OAuth files and the server card. Never write OAuth or the MCP protocol by hand.
+
+- **What the app keeps:** `server/mcp/app.js` (`serverInfo`, `serverDescription`, `instructions`, `tools` and `readMcpUser`), the tools in `server/mcp/tools.js`, the consent page, the assistants list of the profile, and the migrations of the four `oauth*` tables. The layer's README lists their columns, and the startup check fails the healthcheck when one is missing.
+- **A tool** is `{ name, title, description, requiresUser, annotations, schema, run }`:
+  - `schema` is a strict Zod schema of its arguments.
+  - `run(arguments, { baseUrl, user, ...context })` returns plain data.
+  - Throw `McpToolError` from `@brumaombra/nuxt-base/server/mcp` for an answer the assistant should read (like a resource not found). Anything else is reported to Sentry and hidden from the assistant.
+  - Mark the tools that change data with `readOnlyHint: false`, and the irreversible ones with `destructiveHint: true`, so the assistant asks the user first.
+- **Something every tool needs** (like a workspace): add it with the app's `toolContext` hook. Something the user picks on the consent page goes in `readConsentConnection`, stored in the columns of `connectionColumns`. Don't fork the protocol.
+- **Tests:** mock the layer's helpers by their package path (`@brumaombra/nuxt-base/server/mcp`), and stub `useRuntimeConfig` with the app's `brumaBase.mcp` settings (see the app's `tests/helpers/mcpSettings.js`).
+
 ### Server-sent events (`server/sse/`)
 
 Real-time endpoints are `realtime-updates.get.js` handlers that register the connection in a module-level `Map` of `Set`s keyed by resource ID. Each registry sets SSE headers, sends an initial `connected` event, pings every 10 seconds, removes the connection on `close` / `error` with a shared cleanup function, and sets `event._handled = true`. Broadcast functions read fresh data per viewer, drop closed connections, and are called without `await` after mutations.
