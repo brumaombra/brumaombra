@@ -8,11 +8,11 @@ Each preset sets who the agent is, and downloads the rules for that role. Node i
 
 | Preset | Who the agent is | Rules |
 |---|---|---|
-| `app-developer` | Developer of a single app repository | `common personality deploy web` |
-| `apps-manager` | Manager who keeps all my apps aligned | `common personality apps-manager deploy web` |
-| `esp32-developer` | Firmware developer for my ESP32 repositories | `common personality esp32-developer deploy 3d-modelling` |
-| `opengizmo-manager` | Manager of the whole OpenGizmo brand | `common personality opengizmo-manager esp32-developer deploy web 3d-modelling` |
-| `3d-designer` | Designer of 3D parts | `common personality 3d-modelling` |
+| `app-developer` | Developer of a single app repository | `common deploy web` |
+| `apps-manager` | Manager who keeps all my apps aligned | `common apps-manager deploy web` |
+| `esp32-developer` | Firmware developer for my ESP32 repositories | `common esp32-developer deploy 3d-modelling` |
+| `opengizmo-manager` | Manager of the whole OpenGizmo brand | `common opengizmo-manager esp32-developer deploy web 3d-modelling` |
+| `3d-designer` | Designer of 3D parts | `common 3d-modelling` |
 
 ## Add-ons
 
