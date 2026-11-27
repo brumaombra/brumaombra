@@ -4,7 +4,7 @@
 
 ## Presets
 
-Each preset sets who the agent is, and downloads the rules for that role. Node is always installed, and some rules also install the tools they need (`esp32-developer`: PlatformIO, `3d-modelling`: FreeCAD, `mysql`: MySQL). The `video-creator` preset also pre-downloads the Kokoro TTS model into `/opt/kokoro`.
+Each preset sets who the agent is, and downloads the rules for that role. Node is always installed, and some rules also install the tools they need (`esp32-developer`: PlatformIO, `3d-modelling`: FreeCAD, `mysql`: MySQL). The `video-creator` preset also pre-downloads the Chatterbox TTS weights (the house voice, ~3.5 GB) into the Hugging Face cache.
 
 | Preset | Who the agent is | Rules |
 |---|---|---|

@@ -104,20 +104,13 @@ if has_rule mysql; then
     fi
 fi
 
-# Kokoro TTS model (video-creator preset): tts.py reads it from /opt/kokoro (a failed download doesn't block the session)
+# Chatterbox TTS weights (video-creator preset): the house voice tts.py loads from the Hugging Face cache (~3.5 GB, a failed download doesn't block the session)
 if [ "$PRESET" = "video-creator" ]; then
-    KOKORO_URL="https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0" # Model files location
-    KOKORO_DIR="/opt/kokoro"
-    mkdir -p "$KOKORO_DIR"
-    for file in kokoro-v1.0.onnx voices-v1.0.bin; do
-        [ -f "$KOKORO_DIR/$file" ] && continue
-        if curl -fsSL "$KOKORO_URL/$file" -o "$KOKORO_DIR/$file.part"; then
-            mv "$KOKORO_DIR/$file.part" "$KOKORO_DIR/$file"
-        else
-            rm -f "$KOKORO_DIR/$file.part"
-            echo "Could not download the Kokoro file $file"
-        fi
-    done
+    CHATTERBOX_REPO="ResembleAI/chatterbox" # Hugging Face model repository
+    CHATTERBOX_FILES="ve.safetensors t3_cfg.safetensors s3gen.safetensors tokenizer.json conds.pt" # Files ChatterboxTTS.from_pretrained loads
+    if ! uvx --from huggingface_hub hf download "$CHATTERBOX_REPO" $CHATTERBOX_FILES >/dev/null; then
+        echo "Could not download the Chatterbox weights"
+    fi
 fi
 
 # Claude rules for cloud sessions, replaced on every run (a failed download doesn't block the session)
